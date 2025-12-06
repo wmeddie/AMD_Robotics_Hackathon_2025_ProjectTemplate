@@ -35,15 +35,31 @@ from capture_goal import (
 )
 
 # Configuration
-DEFAULT_ROBOT = "so101"
+DEFAULT_ROBOT = "so101_follower"
 DEFAULT_FPS = 30
 DEFAULT_DATA_DIR = "./data"
 DEFAULT_GOALS_DIR = "./goals"
 
+# Robot hardware configuration
+ROBOT_PORT = "/dev/ttyACM1"
+ROBOT_ID = "my_awesome_follower_arm"
+TELEOP_TYPE = "so101_leader"
+TELEOP_PORT = "/dev/ttyACM0"
+TELEOP_ID = "my_awesome_leader_arm"
+
 # Camera setup:
 # - CAMERA_GOAL (8): For capturing goal images
-# - CAMERA_OVERHEAD (4): Overhead view for planner
-# - CAMERA_ARM (6): Robot arm camera for observations
+# - CAMERA_OVERHEAD (4): Overhead view for planner (top camera)
+# - CAMERA_ARM (6): Robot arm camera for observations (front camera)
+
+# Skill name mapping for dataset tasks
+SKILL_TASK_NAMES = {
+    "flatten": "Flatten Sand",
+    "zigzag": "Draw Zigzag",
+    "circle": "Draw Circles",
+    "stamp": "Stamp Triangle",
+    "place_rock": "Place Rock",
+}
 
 
 class DemonstrationRecorder:
@@ -80,8 +96,12 @@ class DemonstrationRecorder:
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.goals_dir.mkdir(parents=True, exist_ok=True)
         
-        # Initialize goal capture
-        self.goal_capturer = GoalImageCapture(camera_index=camera_index)
+        # Initialize goal capture with correct resolution
+        self.goal_capturer = GoalImageCapture(
+            camera_index=camera_index,
+            width=CAMERA_WIDTH,
+            height=CAMERA_HEIGHT
+        )
         
         # Track recorded episodes
         self.current_episode = self._get_next_episode_number()
@@ -135,52 +155,47 @@ class DemonstrationRecorder:
         
         input("\nPress ENTER when ready to start recording...")
         
-        # Construct LeRobot record command
-        output_dir = self.data_dir / f"episode_{self.current_episode:04d}"
+        # Get task name for this skill
+        task_name = SKILL_TASK_NAMES.get(self.skill, self.skill.replace("_", " ").title())
         
-        # Try different LeRobot command formats
-        cmd_options = [
-            # New LeRobot CLI format
-            [
-                "lerobot-record",
-                "--robot", self.robot,
-                "--fps", str(self.fps),
-                "--output", str(output_dir),
-                "--task", self.skill,
-            ],
-            # Alternative format
-            [
-                "python", "-m", "lerobot.scripts.control_robot",
-                "record",
-                f"--robot-path=lerobot/configs/robot/{self.robot}.yaml",
-                f"--fps={self.fps}",
-                f"--repo-id=local/{self.skill}",
-                f"--root={str(self.data_dir)}",
-                "--single-task", self.skill,
-            ],
+        # Build camera config string
+        cameras_config = (
+            f"{{ front: {{type: opencv, index_or_path: {CAMERA_ARM}, "
+            f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: {self.fps}}}, "
+            f"top: {{type: opencv, index_or_path: {CAMERA_OVERHEAD}, "
+            f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: {self.fps}}} }}"
+        )
+        
+        # Build repo_id for this skill's dataset
+        repo_id = f"local/{self.skill}"
+        
+        # Construct LeRobot record command (LeRobot 0.4.x format)
+        cmd = [
+            "lerobot-record",
+            f"--robot.type={self.robot}",
+            f"--robot.port={ROBOT_PORT}",
+            f"--robot.id={ROBOT_ID}",
+            f"--robot.cameras={cameras_config}",
+            f"--teleop.type={TELEOP_TYPE}",
+            f"--teleop.port={TELEOP_PORT}",
+            f"--teleop.id={TELEOP_ID}",
+            "--display_data=true",
+            f"--dataset.num_episodes=1",
+            f"--dataset.single_task={task_name}",
+            f"--dataset.repo_id={repo_id}",
         ]
         
-        success = False
-        for cmd in cmd_options:
-            try:
-                print(f"\nRunning: {' '.join(cmd)}")
-                result = subprocess.run(cmd, check=True)
-                success = True
-                break
-            except FileNotFoundError:
-                continue
-            except subprocess.CalledProcessError as e:
-                print(f"Recording failed with error: {e}")
-                continue
-        
-        if not success:
-            print("\nWarning: Could not run LeRobot recording command.")
-            print("Please ensure LeRobot is installed and configured.")
-            print("\nAlternative: Run the recording manually:")
-            print(f"  lerobot-record --robot {self.robot} --task {self.skill}")
+        try:
+            print(f"\nRunning: {' '.join(cmd)}")
+            result = subprocess.run(cmd, check=True)
+            return True
+        except FileNotFoundError:
+            print("\nError: lerobot-record command not found.")
+            print("Please ensure LeRobot is installed: pip install lerobot==0.4.1")
             return False
-        
-        return True
+        except subprocess.CalledProcessError as e:
+            print(f"\nRecording failed with error: {e}")
+            return False
     
     def record_session(self, num_episodes: int = 1) -> list:
         """
@@ -240,6 +255,67 @@ class DemonstrationRecorder:
         print(f"Goals saved to: {self.goals_dir}")
         
         return results
+
+
+def record_skill_dataset(
+    skill: str,
+    num_episodes: int = 15,
+    robot: str = DEFAULT_ROBOT,
+    repo_id: Optional[str] = None
+):
+    """
+    Record a full dataset for a skill using lerobot-record directly.
+    
+    This runs the lerobot-record command once for all episodes,
+    which is more efficient than recording one at a time.
+    
+    Args:
+        skill: Skill name (flatten, zigzag, circle, stamp, place_rock)
+        num_episodes: Number of episodes to record
+        robot: Robot type
+        repo_id: HuggingFace repo ID (default: local/{skill})
+    """
+    task_name = SKILL_TASK_NAMES.get(skill, skill.replace("_", " ").title())
+    repo_id = repo_id or f"local/{skill}"
+    
+    # Build camera config string
+    cameras_config = (
+        f"{{ front: {{type: opencv, index_or_path: {CAMERA_ARM}, "
+        f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: 30}}, "
+        f"top: {{type: opencv, index_or_path: {CAMERA_OVERHEAD}, "
+        f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: 30}} }}"
+    )
+    
+    cmd = [
+        "lerobot-record",
+        f"--robot.type={robot}",
+        f"--robot.port={ROBOT_PORT}",
+        f"--robot.id={ROBOT_ID}",
+        f"--robot.cameras={cameras_config}",
+        f"--teleop.type={TELEOP_TYPE}",
+        f"--teleop.port={TELEOP_PORT}",
+        f"--teleop.id={TELEOP_ID}",
+        "--display_data=true",
+        f"--dataset.num_episodes={num_episodes}",
+        f"--dataset.single_task={task_name}",
+        f"--dataset.repo_id={repo_id}",
+    ]
+    
+    print(f"\n{'#'*60}")
+    print(f"# RECORDING: {skill.upper()}")
+    print(f"# Task: {task_name}")
+    print(f"# Episodes: {num_episodes}")
+    print(f"# Repo: {repo_id}")
+    print(f"{'#'*60}")
+    print(f"\nCommand:\n{' '.join(cmd)}\n")
+    
+    try:
+        subprocess.run(cmd, check=True)
+        print(f"\n Recording complete for {skill}!")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"\nRecording failed: {e}")
+        return False
 
 
 def batch_record_all_skills(
@@ -335,30 +411,62 @@ def main():
         action="store_true",
         help="Record demonstrations for all skills"
     )
+    parser.add_argument(
+        "--simple",
+        action="store_true",
+        help="Simple mode: just run lerobot-record directly (recommended)"
+    )
+    parser.add_argument(
+        "--repo_id",
+        type=str,
+        default=None,
+        help="HuggingFace repo ID for dataset (default: local/{skill})"
+    )
     
     args = parser.parse_args()
     
-    if args.batch:
-        batch_record_all_skills(
-            num_episodes_per_skill=args.num_episodes,
-            robot=args.robot,
-            data_dir=args.data_dir,
-            goals_dir=args.goals_dir
-        )
+    if args.skill is None and not args.batch:
+        parser.error("--skill is required unless using --batch mode")
+    
+    if args.simple or True:  # Default to simple mode
+        # Simple mode: just run lerobot-record directly
+        if args.batch:
+            for skill in SKILL_TYPES:
+                print(f"\n\nReady to record: {skill}")
+                input("Press ENTER when ready...")
+                record_skill_dataset(
+                    skill=skill,
+                    num_episodes=args.num_episodes,
+                    robot=args.robot,
+                    repo_id=args.repo_id
+                )
+        else:
+            record_skill_dataset(
+                skill=args.skill,
+                num_episodes=args.num_episodes,
+                robot=args.robot,
+                repo_id=args.repo_id
+            )
     else:
-        if args.skill is None:
-            parser.error("--skill is required unless using --batch mode")
-        
-        recorder = DemonstrationRecorder(
-            skill=args.skill,
-            robot=args.robot,
-            fps=args.fps,
-            data_dir=args.data_dir,
-            goals_dir=args.goals_dir,
-            camera_index=args.camera
-        )
-        
-        recorder.record_session(args.num_episodes)
+        # Original mode with goal capture
+        if args.batch:
+            batch_record_all_skills(
+                num_episodes_per_skill=args.num_episodes,
+                robot=args.robot,
+                data_dir=args.data_dir,
+                goals_dir=args.goals_dir
+            )
+        else:
+            recorder = DemonstrationRecorder(
+                skill=args.skill,
+                robot=args.robot,
+                fps=args.fps,
+                data_dir=args.data_dir,
+                goals_dir=args.goals_dir,
+                camera_index=args.camera
+            )
+            
+            recorder.record_session(args.num_episodes)
 
 
 if __name__ == "__main__":
