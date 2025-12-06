@@ -301,6 +301,7 @@ def record_skill_dataset(
         f"--dataset.num_episodes={num_episodes}",
         f"--dataset.single_task={task_name}",
         f"--dataset.repo_id={repo_id}",
+        "--dataset.reset_time_s=5",  # Reduced from 60s default
     ]
     
     print(f"\n{'#'*60}")
