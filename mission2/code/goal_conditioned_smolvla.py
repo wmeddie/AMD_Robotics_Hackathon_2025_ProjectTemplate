@@ -97,8 +97,8 @@ class GoalConditionedSmolVLA(nn.Module):
     
     def __init__(
         self,
-        pretrained_path: str = "lerobot/smolvla_base",
-        siglip_model: Optional[str] = None,
+        pretrained_path: str = "lerobot/smolvla_base",  # HuggingFace model ID
+        siglip_model: Optional[str] = None,  # Uses SmolVLM2's vision encoder by default
         goal_embed_dim: Optional[int] = None,
         freeze_vlm: bool = True,
         freeze_goal_encoder: bool = True,

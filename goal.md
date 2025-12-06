@@ -24,17 +24,17 @@ We're building a hierarchical system:
 ### Task 1: Environment Setup
 
 ```bash
-# Clone required repos
-git clone https://github.com/huggingface/lerobot
-git clone https://github.com/huggingface/smolvla
-
 # Set up ROCm-compatible PyTorch for MI300X
 pip install torch torchvision --index-url https://download.pytorch.org/whl/rocm6.0
 
-# Install dependencies
-pip install -e ./lerobot
-pip install -e ./smolvla
+# Install LeRobot 0.4.1 (includes SmolVLA policy)
+pip install lerobot==0.4.1
+
+# Install additional dependencies
+pip install transformers accelerate wandb anthropic
 ```
+
+Note: SmolVLA is included in LeRobot as `lerobot.policies.smolvla`. The pretrained model is available at `lerobot/smolvla_base` on HuggingFace. The VLM backbone uses `HuggingFaceTB/SmolVLM2-500M-Video-Instruct`.
 
 Verify ROCm works:
 ```python
@@ -42,6 +42,14 @@ import torch
 print(f"ROCm available: {torch.cuda.is_available()}")
 print(f"Device count: {torch.cuda.device_count()}")
 print(f"Device name: {torch.cuda.get_device_name(0)}")
+
+# Verify LeRobot and SmolVLA
+import lerobot
+print(f"LeRobot version: {lerobot.__version__}")
+print(f"Available policies: {lerobot.available_policies}")
+
+from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
+print("SmolVLA policy loaded successfully")
 ```
 
 ### Task 2: Goal-Conditioned SmolVLA Architecture Modification
