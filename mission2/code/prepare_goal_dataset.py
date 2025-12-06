@@ -26,10 +26,9 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
-# Try importing LeRobot dataset utilities
+# Try importing LeRobot dataset utilities - LeRobot 0.4.x API
 try:
-    from lerobot.common.datasets.lerobot_dataset import LeRobotDataset
-    from lerobot.common.datasets.push_dataset_to_hub.utils import save_images_concurrently
+    from lerobot.datasets.lerobot_dataset import LeRobotDataset
     import torch
     LEROBOT_AVAILABLE = True
 except ImportError:

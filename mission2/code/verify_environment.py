@@ -76,12 +76,15 @@ def check_lerobot():
         import lerobot
         print(f"  LeRobot version: {getattr(lerobot, '__version__', 'unknown')}")
         
-        # Check key modules
-        from lerobot.common.datasets.lerobot_dataset import LeRobotDataset
+        # Check key modules - LeRobot 0.4.x API
+        from lerobot.datasets.lerobot_dataset import LeRobotDataset
         print("  LeRobotDataset: OK")
         
-        from lerobot.common.robot_devices.cameras.opencv import OpenCVCamera
+        from lerobot.cameras.opencv.camera_opencv import OpenCVCamera
         print("  OpenCVCamera: OK")
+        
+        # Check available policies
+        print(f"  Available policies: {lerobot.available_policies}")
         
         print("  OK")
         return True
@@ -90,8 +93,7 @@ def check_lerobot():
         print(f"  ERROR: LeRobot not installed or missing dependencies")
         print(f"  Details: {e}")
         print("  Install with:")
-        print("    git clone https://github.com/huggingface/lerobot")
-        print("    pip install -e ./lerobot")
+        print("    pip install lerobot==0.4.1")
         return False
 
 

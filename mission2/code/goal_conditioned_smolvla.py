@@ -33,10 +33,10 @@ except ImportError:
     TRANSFORMERS_AVAILABLE = False
     print("Warning: transformers not installed")
 
-# Try importing LeRobot policy components
+# Try importing LeRobot policy components - LeRobot 0.4.x API
 try:
-    from lerobot.common.policies.smolvla.modeling_smolvla import SmolVLAPolicy
-    from lerobot.common.policies.smolvla.configuration_smolvla import SmolVLAConfig
+    from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
+    from lerobot.policies.smolvla.configuration_smolvla import SmolVLAConfig
     LEROBOT_SMOLVLA_AVAILABLE = True
 except ImportError:
     LEROBOT_SMOLVLA_AVAILABLE = False

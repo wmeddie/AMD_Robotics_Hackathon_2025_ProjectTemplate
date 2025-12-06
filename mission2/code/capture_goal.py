@@ -19,10 +19,10 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-# LeRobot camera utilities (if available)
+# LeRobot camera utilities (if available) - LeRobot 0.4.x API
 try:
-    from lerobot.common.robot_devices.cameras.opencv import OpenCVCamera
-    from lerobot.common.robot_devices.cameras.configs import OpenCVCameraConfig
+    from lerobot.cameras.opencv.camera_opencv import OpenCVCamera
+    from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
     LEROBOT_AVAILABLE = True
 except ImportError:
     LEROBOT_AVAILABLE = False
