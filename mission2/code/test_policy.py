@@ -146,8 +146,13 @@ def get_observation_raw(front_camera, top_camera, robot):
     front_img = front_camera.async_read()
     top_img = top_camera.async_read()
     
-    # Get robot state
-    state = robot.get_observation()["observation.state"]  # [6] for SO101
+    # Get robot state - SO101 returns {motor_name}.pos for each motor
+    robot_obs = robot.get_observation()
+    
+    # Extract motor positions in order (6 DOF for SO101)
+    # Motor names: shoulder_pan, shoulder_lift, elbow_flex, wrist_flex, wrist_roll, gripper
+    motor_names = ["shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll", "gripper"]
+    state = np.array([robot_obs.get(f"{m}.pos", 0.0) for m in motor_names], dtype=np.float32)
     
     # Convert images to tensors: [H, W, C] uint8 -> [C, H, W] float32 [0, 1]
     front_tensor = torch.from_numpy(front_img).permute(2, 0, 1).float() / 255.0
