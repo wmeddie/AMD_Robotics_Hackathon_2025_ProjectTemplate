@@ -264,7 +264,8 @@ def record_skill_dataset(
     skill: str,
     num_episodes: int = 15,
     robot: str = DEFAULT_ROBOT,
-    repo_id: Optional[str] = None
+    repo_id: Optional[str] = None,
+    episode_time_s: int = 60
 ):
     """
     Record a full dataset for a skill using lerobot-record directly.
@@ -273,10 +274,11 @@ def record_skill_dataset(
     which is more efficient than recording one at a time.
     
     Args:
-        skill: Skill name (flatten, zigzag, circle, stamp, place_rock)
+        skill: Skill name (flatten, zigzag, circle, stamp, place_rock, rake)
         num_episodes: Number of episodes to record
         robot: Robot type
         repo_id: HuggingFace repo ID (default: local/{skill})
+        episode_time_s: Duration of each episode in seconds (default: 60)
     """
     task_name = SKILL_TASK_NAMES.get(skill, skill.replace("_", " ").title())
     repo_id = repo_id or f"{DEFAULT_HF_NAMESPACE}/{DEFAULT_DATASET_NAME}"
@@ -305,6 +307,7 @@ def record_skill_dataset(
         f"--dataset.num_episodes={num_episodes}",
         f"--dataset.single_task={task_name}",
         f"--dataset.repo_id={repo_id}",
+        f"--dataset.episode_time_s={episode_time_s}",
         "--dataset.reset_time_s=5",  # Reduced from 60s default
     ]
     
@@ -384,6 +387,12 @@ def main():
         help="Number of episodes to record (default: 15)"
     )
     parser.add_argument(
+        "--episode_time",
+        type=int,
+        default=60,
+        help="Duration of each episode in seconds (default: 60)"
+    )
+    parser.add_argument(
         "--robot",
         type=str,
         default=DEFAULT_ROBOT,
@@ -445,14 +454,16 @@ def main():
                     skill=skill,
                     num_episodes=args.num_episodes,
                     robot=args.robot,
-                    repo_id=args.repo_id
+                    repo_id=args.repo_id,
+                    episode_time_s=args.episode_time
                 )
         else:
             record_skill_dataset(
                 skill=args.skill,
                 num_episodes=args.num_episodes,
                 robot=args.robot,
-                repo_id=args.repo_id
+                repo_id=args.repo_id,
+                episode_time_s=args.episode_time
             )
     else:
         # Original mode with goal capture
