@@ -60,7 +60,7 @@ class GoalImageCapture:
         """Connect to the camera."""
         if LEROBOT_AVAILABLE:
             config = OpenCVCameraConfig(
-                camera_index=self.camera_index,
+                index_or_path=self.camera_index,
                 fps=30,
                 width=self.width,
                 height=self.height,
