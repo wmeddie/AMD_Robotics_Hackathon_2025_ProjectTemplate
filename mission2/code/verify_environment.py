@@ -98,31 +98,31 @@ def check_lerobot():
 
 
 def check_smolvla():
-    """Check SmolVLA installation."""
+    """Check SmolVLA installation (included in LeRobot 0.4.x)."""
     print("\nChecking SmolVLA...")
     try:
-        # Try importing SmolVLA components
-        from transformers import AutoModelForVision2Seq, AutoProcessor
+        # Check transformers
+        from transformers import AutoProcessor
         print("  Transformers: OK")
         
-        # Check if SmolVLA model can be loaded
-        try:
-            processor = AutoProcessor.from_pretrained(
-                "HuggingFaceTB/SmolVLM-Instruct",
-                trust_remote_code=True
-            )
-            print("  SmolVLM processor: OK")
-        except Exception as e:
-            print(f"  SmolVLM processor: WARNING - {e}")
+        # Check SmolVLA policy from LeRobot
+        from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
+        from lerobot.policies.smolvla.configuration_smolvla import SmolVLAConfig
+        print("  SmolVLAPolicy: OK")
+        print("  SmolVLAConfig: OK")
         
-        print("  OK (basic check passed)")
+        # Check default VLM model name
+        config = SmolVLAConfig()
+        print(f"  VLM model: {config.vlm_model_name}")
+        print(f"  Pretrained: lerobot/smolvla_base (on HuggingFace)")
+        
+        print("  OK")
         return True
         
     except ImportError as e:
         print(f"  ERROR: {e}")
         print("  Install with:")
-        print("    git clone https://github.com/huggingface/smolvla")
-        print("    pip install -e ./smolvla")
+        print("    pip install lerobot==0.4.1 transformers")
         return False
 
 
