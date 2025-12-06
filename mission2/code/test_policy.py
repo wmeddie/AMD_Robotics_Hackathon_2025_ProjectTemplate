@@ -31,34 +31,58 @@ DEFAULT_TASK = "pick up the rock and place it in the zen garden"
 
 
 def load_policy_with_processors(checkpoint_path: str, device: str = "cuda"):
-    """Load trained SmolVLA policy with pre/post processors from local checkpoint."""
+    """Load trained SmolVLA policy with pre/post processors.
+    
+    Args:
+        checkpoint_path: Either a local path or HuggingFace Hub repo ID (e.g., "wmeddie/smolvla_place_rock")
+        device: Device to load model on
+    """
     print(f"Loading policy from {checkpoint_path}...")
-    checkpoint_path = Path(checkpoint_path)
     
-    # Load config
-    config = PreTrainedConfig.from_pretrained(
-        str(checkpoint_path),
-        local_files_only=True
-    )
-    # Override device
-    config.device = device
+    # Check if it's a local path or HuggingFace Hub repo
+    local_path = Path(checkpoint_path)
+    is_local = local_path.exists() and local_path.is_dir()
     
-    # Create policy
-    policy = SmolVLAPolicy(config)
-    
-    # Load weights
-    weights_path = checkpoint_path / "model.safetensors"
-    state_dict = load_file(str(weights_path))
-    policy.load_state_dict(state_dict)
+    if is_local:
+        print("Loading from local path...")
+        # Load config from local
+        config = PreTrainedConfig.from_pretrained(
+            str(checkpoint_path),
+            local_files_only=True
+        )
+        config.device = device
+        
+        # Create policy and load weights
+        policy = SmolVLAPolicy(config)
+        weights_path = local_path / "model.safetensors"
+        state_dict = load_file(str(weights_path))
+        policy.load_state_dict(state_dict)
+        
+        # Load processors from local
+        preprocessor, postprocessor = make_pre_post_processors(
+            config,
+            pretrained_path=str(checkpoint_path)
+        )
+    else:
+        print("Loading from HuggingFace Hub...")
+        # Load config from Hub
+        config = PreTrainedConfig.from_pretrained(
+            checkpoint_path,
+            local_files_only=False
+        )
+        config.device = device
+        
+        # Load policy from Hub (handles weights automatically)
+        policy = SmolVLAPolicy.from_pretrained(checkpoint_path)
+        
+        # Load processors from Hub
+        preprocessor, postprocessor = make_pre_post_processors(
+            config,
+            pretrained_path=checkpoint_path
+        )
     
     policy.to(device)
     policy.eval()
-    
-    # Load pre/post processors
-    preprocessor, postprocessor = make_pre_post_processors(
-        config,
-        pretrained_path=str(checkpoint_path)
-    )
     
     print("Policy and processors loaded!")
     return policy, preprocessor, postprocessor
