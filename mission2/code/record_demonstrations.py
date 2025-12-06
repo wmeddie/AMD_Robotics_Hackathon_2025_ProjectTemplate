@@ -268,7 +268,9 @@ def record_skill_dataset(
     robot: str = DEFAULT_ROBOT,
     repo_id: Optional[str] = None,
     episode_time_s: int = 60,
-    fps: int = 30
+    fps: int = 30,
+    push_to_hub: bool = False,
+    local_dir: str = "./recordings"
 ):
     """
     Record a full dataset for a skill using lerobot-record directly.
@@ -280,12 +282,17 @@ def record_skill_dataset(
         skill: Skill name (flatten, zigzag, circle, stamp, place_rock, rake)
         num_episodes: Number of episodes to record
         robot: Robot type
-        repo_id: HuggingFace repo ID (default: local/{skill})
+        repo_id: HuggingFace repo ID for pushing (default: wmeddie/zenbot_{skill})
         episode_time_s: Duration of each episode in seconds (default: 60)
         fps: Recording frames per second (default: 30, use 5 for longer horizon tasks)
+        push_to_hub: Whether to push to HuggingFace after recording (default: False)
+        local_dir: Local directory to save recordings (default: ./recordings)
     """
     task_name = SKILL_TASK_NAMES.get(skill, skill.replace("_", " ").title())
-    repo_id = repo_id or f"{DEFAULT_HF_NAMESPACE}/{DEFAULT_DATASET_NAME}"
+    
+    # Use local repo_id for recording, HF repo_id for pushing
+    local_repo_id = f"local/{skill}"
+    hf_repo_id = repo_id or f"{DEFAULT_HF_NAMESPACE}/zenbot_{skill}"
     
     # Build camera config string (3 cameras: front, top, and goal)
     # The goal camera captures the target pattern that the robot should achieve
@@ -310,22 +317,42 @@ def record_skill_dataset(
         "--display_data=true",
         f"--dataset.num_episodes={num_episodes}",
         f"--dataset.single_task={task_name}",
-        f"--dataset.repo_id={repo_id}",
+        f"--dataset.repo_id={local_repo_id}",
         f"--dataset.episode_time_s={episode_time_s}",
         "--dataset.reset_time_s=5",  # Reduced from 60s default
+        f"--dataset.local_files_only=true",
     ]
     
     print(f"\n{'#'*60}")
     print(f"# RECORDING: {skill.upper()}")
     print(f"# Task: {task_name}")
     print(f"# Episodes: {num_episodes}")
-    print(f"# Repo: {repo_id}")
+    print(f"# Local: {local_repo_id}")
+    if push_to_hub:
+        print(f"# Will push to: {hf_repo_id}")
     print(f"{'#'*60}")
     print(f"\nCommand:\n{' '.join(cmd)}\n")
     
     try:
         subprocess.run(cmd, check=True)
-        print(f"\n Recording complete for {skill}!")
+        print(f"\nRecording complete for {skill}!")
+        
+        # Push to HuggingFace if requested
+        if push_to_hub:
+            print(f"\nPushing to HuggingFace: {hf_repo_id}")
+            push_cmd = [
+                "huggingface-cli", "upload",
+                hf_repo_id,
+                f"~/.cache/huggingface/lerobot/{local_repo_id}",
+                "--repo-type", "dataset"
+            ]
+            print(f"Command: {' '.join(push_cmd)}")
+            subprocess.run(push_cmd, check=True)
+            print(f"Pushed to {hf_repo_id}!")
+        else:
+            print(f"\nData saved locally. To push to HuggingFace later:")
+            print(f"  huggingface-cli upload {hf_repo_id} ~/.cache/huggingface/lerobot/{local_repo_id} --repo-type dataset")
+        
         return True
     except subprocess.CalledProcessError as e:
         print(f"\nRecording failed: {e}")
@@ -440,7 +467,12 @@ def main():
         "--repo_id",
         type=str,
         default=None,
-        help="HuggingFace repo ID for dataset (default: local/{skill})"
+        help="HuggingFace repo ID for pushing (default: wmeddie/zenbot_{skill})"
+    )
+    parser.add_argument(
+        "--push",
+        action="store_true",
+        help="Push to HuggingFace after recording"
     )
     
     args = parser.parse_args()
@@ -460,7 +492,8 @@ def main():
                     robot=args.robot,
                     repo_id=args.repo_id,
                     episode_time_s=args.episode_time,
-                    fps=args.fps
+                    fps=args.fps,
+                    push_to_hub=args.push
                 )
         else:
             record_skill_dataset(
@@ -469,7 +502,8 @@ def main():
                 robot=args.robot,
                 repo_id=args.repo_id,
                 episode_time_s=args.episode_time,
-                fps=args.fps
+                fps=args.fps,
+                push_to_hub=args.push
             )
     else:
         # Original mode with goal capture
