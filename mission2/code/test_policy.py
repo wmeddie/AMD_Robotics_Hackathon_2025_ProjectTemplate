@@ -26,6 +26,10 @@ from safetensors.torch import load_file
 CAMERA_ARM = 6      # Front/arm camera
 CAMERA_OVERHEAD = 4 # Overhead camera  
 
+# Robot configuration (must match calibration used during training)
+ROBOT_PORT = "/dev/ttyACM1"
+ROBOT_ID = "my_awesome_follower_arm"  # Calibration ID from training
+
 # Default task description (used during inference)
 DEFAULT_TASK = "pick up the rock and place it in the zen garden"
 
@@ -126,7 +130,8 @@ def setup_robot():
     print("Setting up robot...")
     
     config = SO101FollowerConfig(
-        port="/dev/ttyACM1",  # Follower port
+        port=ROBOT_PORT,
+        id=ROBOT_ID,  # Use same calibration as training
     )
     robot = SO101Follower(config)
     robot.connect()
