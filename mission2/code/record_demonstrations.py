@@ -265,7 +265,8 @@ def record_skill_dataset(
     num_episodes: int = 15,
     robot: str = DEFAULT_ROBOT,
     repo_id: Optional[str] = None,
-    episode_time_s: int = 60
+    episode_time_s: int = 60,
+    fps: int = 30
 ):
     """
     Record a full dataset for a skill using lerobot-record directly.
@@ -279,6 +280,7 @@ def record_skill_dataset(
         robot: Robot type
         repo_id: HuggingFace repo ID (default: local/{skill})
         episode_time_s: Duration of each episode in seconds (default: 60)
+        fps: Recording frames per second (default: 30, use 5 for longer horizon tasks)
     """
     task_name = SKILL_TASK_NAMES.get(skill, skill.replace("_", " ").title())
     repo_id = repo_id or f"{DEFAULT_HF_NAMESPACE}/{DEFAULT_DATASET_NAME}"
@@ -287,11 +289,11 @@ def record_skill_dataset(
     # The goal camera captures the target pattern that the robot should achieve
     cameras_config = (
         f"{{ front: {{type: opencv, index_or_path: {CAMERA_ARM}, "
-        f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: 30}}, "
+        f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: {fps}}}, "
         f"top: {{type: opencv, index_or_path: {CAMERA_OVERHEAD}, "
-        f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: 30}}, "
+        f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: {fps}}}, "
         f"goal: {{type: opencv, index_or_path: {CAMERA_GOAL}, "
-        f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: 30}} }}"
+        f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: {fps}}} }}"
     )
     
     cmd = [
@@ -455,7 +457,8 @@ def main():
                     num_episodes=args.num_episodes,
                     robot=args.robot,
                     repo_id=args.repo_id,
-                    episode_time_s=args.episode_time
+                    episode_time_s=args.episode_time,
+                    fps=args.fps
                 )
         else:
             record_skill_dataset(
@@ -463,7 +466,8 @@ def main():
                 num_episodes=args.num_episodes,
                 robot=args.robot,
                 repo_id=args.repo_id,
-                episode_time_s=args.episode_time
+                episode_time_s=args.episode_time,
+                fps=args.fps
             )
     else:
         # Original mode with goal capture
