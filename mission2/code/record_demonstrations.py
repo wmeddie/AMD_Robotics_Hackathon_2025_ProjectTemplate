@@ -57,6 +57,7 @@ TELEOP_ID = "my_awesome_leader_arm"
 # Skill name mapping for dataset tasks
 SKILL_TASK_NAMES = {
     "flatten": "Flatten Sand",
+    "rake": "Rake Sand",
     "zigzag": "Draw Zigzag",
     "circle": "Draw Circles",
     "stamp": "Stamp Triangle",
@@ -280,11 +281,14 @@ def record_skill_dataset(
     task_name = SKILL_TASK_NAMES.get(skill, skill.replace("_", " ").title())
     repo_id = repo_id or f"{DEFAULT_HF_NAMESPACE}/{DEFAULT_DATASET_NAME}"
     
-    # Build camera config string
+    # Build camera config string (3 cameras: front, top, and goal)
+    # The goal camera captures the target pattern that the robot should achieve
     cameras_config = (
         f"{{ front: {{type: opencv, index_or_path: {CAMERA_ARM}, "
         f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: 30}}, "
         f"top: {{type: opencv, index_or_path: {CAMERA_OVERHEAD}, "
+        f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: 30}}, "
+        f"goal: {{type: opencv, index_or_path: {CAMERA_GOAL}, "
         f"width: {CAMERA_WIDTH}, height: {CAMERA_HEIGHT}, fps: 30}} }}"
     )
     

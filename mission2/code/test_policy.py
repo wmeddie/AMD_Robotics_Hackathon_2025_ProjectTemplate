@@ -24,7 +24,8 @@ from safetensors.torch import load_file
 
 # Camera indices (adjust if needed)
 CAMERA_ARM = 6      # Front/arm camera
-CAMERA_OVERHEAD = 4 # Overhead camera  
+CAMERA_OVERHEAD = 4 # Overhead camera
+CAMERA_GOAL = 8     # Goal image camera (shows target pattern)
 
 # Robot configuration (must match calibration used during training)
 ROBOT_PORT = "/dev/ttyACM1"
@@ -92,7 +93,7 @@ def load_policy_with_processors(checkpoint_path: str, device: str = "cuda"):
     return policy, preprocessor, postprocessor
 
 
-def setup_cameras():
+def setup_cameras(use_goal_camera=False):
     """Initialize cameras."""
     from lerobot.cameras.opencv import OpenCVCamera, OpenCVCameraConfig
     
@@ -119,8 +120,20 @@ def setup_cameras():
     front_camera.connect()
     top_camera.connect()
     
+    # Goal camera (observation.images.goal) - optional, for goal-conditioned policies
+    goal_camera = None
+    if use_goal_camera:
+        goal_config = OpenCVCameraConfig(
+            index_or_path=CAMERA_GOAL,
+            width=640,
+            height=480,
+            fps=30,
+        )
+        goal_camera = OpenCVCamera(goal_config)
+        goal_camera.connect()
+    
     print("Cameras connected!")
-    return front_camera, top_camera
+    return front_camera, top_camera, goal_camera
 
 
 def setup_robot():
@@ -140,7 +153,7 @@ def setup_robot():
     return robot
 
 
-def get_observation_raw(front_camera, top_camera, robot):
+def get_observation_raw(front_camera, top_camera, robot, goal_camera=None):
     """Get current observation dict as tensors for preprocessing."""
     # Get camera images - returns numpy array [H, W, C] uint8
     front_img = front_camera.async_read()
@@ -167,14 +180,22 @@ def get_observation_raw(front_camera, top_camera, robot):
         "observation.state": state_tensor,
     }
     
+    # Add goal camera if available
+    if goal_camera is not None:
+        goal_img = goal_camera.async_read()
+        goal_tensor = torch.from_numpy(goal_img).permute(2, 0, 1).float() / 255.0
+        observation["observation.images.goal"] = goal_tensor
+    
     return observation
 
 
 def run_inference_loop(policy, preprocessor, postprocessor, front_camera, top_camera, robot, 
-                       task=DEFAULT_TASK, device="cuda", control_hz=10, duration=30):
+                       goal_camera=None, task=DEFAULT_TASK, device="cuda", control_hz=10, duration=30):
     """Run policy inference loop."""
     print(f"\nStarting inference loop at {control_hz}Hz for {duration}s...")
     print(f"Task: {task}")
+    if goal_camera:
+        print("Goal camera enabled - policy will use goal image")
     print("Press Ctrl+C to stop\n")
     
     # Reset policy action queue before starting
@@ -189,8 +210,8 @@ def run_inference_loop(policy, preprocessor, postprocessor, front_camera, top_ca
         while time.time() - start_time < duration:
             loop_start = time.time()
             
-            # Get raw observation
-            obs_raw = get_observation_raw(front_camera, top_camera, robot)
+            # Get raw observation (including goal camera if available)
+            obs_raw = get_observation_raw(front_camera, top_camera, robot, goal_camera)
             
             # Add task to observation (preprocessor expects it in the dict)
             obs_raw["task"] = task
@@ -261,6 +282,7 @@ def main():
     parser.add_argument("--hz", type=int, default=10, help="Control frequency")
     parser.add_argument("--duration", type=int, default=30, help="Duration in seconds")
     parser.add_argument("--task", type=str, default=DEFAULT_TASK, help="Task description")
+    parser.add_argument("--goal-camera", action="store_true", help="Use goal camera for goal-conditioned policy")
     parser.add_argument("--dry-run", action="store_true", help="Test without robot")
     args = parser.parse_args()
     
@@ -302,20 +324,23 @@ def main():
         return
     
     # Setup hardware
-    front_camera, top_camera = setup_cameras()
+    front_camera, top_camera, goal_camera = setup_cameras(use_goal_camera=args.goal_camera)
     robot = setup_robot()
     
     try:
         # Run inference
         run_inference_loop(
             policy, preprocessor, postprocessor, front_camera, top_camera, robot,
-            task=args.task, device=device, control_hz=args.hz, duration=args.duration
+            goal_camera=goal_camera, task=args.task, device=device, 
+            control_hz=args.hz, duration=args.duration
         )
     finally:
         # Cleanup
         print("\nCleaning up...")
         front_camera.disconnect()
         top_camera.disconnect()
+        if goal_camera:
+            goal_camera.disconnect()
         robot.disconnect()
         print("Done!")
 
