@@ -199,10 +199,27 @@ def run_inference_loop(policy, preprocessor, postprocessor, front_camera, top_ca
                 action = policy.select_action(obs_processed)
             
             # Postprocess action (unnormalize)
-            action = postprocessor(action)
+            action_out = postprocessor(action)
             
-            # Get action tensor and convert to numpy
-            action_tensor = action["action"]
+            # Debug: print type and structure
+            if step == 0:
+                print(f"DEBUG: action type = {type(action_out)}")
+                if isinstance(action_out, dict):
+                    print(f"DEBUG: action keys = {action_out.keys()}")
+                    for k, v in action_out.items():
+                        print(f"DEBUG:   {k}: type={type(v)}, shape={v.shape if hasattr(v, 'shape') else 'N/A'}")
+                elif hasattr(action_out, 'shape'):
+                    print(f"DEBUG: action shape = {action_out.shape}")
+            
+            # Get action tensor - handle both dict and tensor outputs
+            if isinstance(action_out, dict):
+                action_tensor = action_out.get("action", action_out.get("actions", None))
+                if action_tensor is None:
+                    # Try first value in dict
+                    action_tensor = next(iter(action_out.values()))
+            else:
+                action_tensor = action_out
+            
             # Handle different tensor shapes: [action_dim], [1, action_dim], [batch, chunk, action_dim]
             if action_tensor.dim() == 1:
                 action_np = action_tensor.cpu().numpy()
