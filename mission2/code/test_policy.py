@@ -136,8 +136,13 @@ def setup_cameras(use_goal_camera=False):
     return front_camera, top_camera, goal_camera
 
 
-def setup_robot():
-    """Initialize robot."""
+def setup_robot(max_speed=None):
+    """Initialize robot.
+    
+    Args:
+        max_speed: Maximum relative movement per step (in motor units). 
+                   Lower = slower/smoother. Try 5-10 for slow, None for full speed.
+    """
     from lerobot.robots.so101_follower import SO101Follower, SO101FollowerConfig
     
     print("Setting up robot...")
@@ -145,11 +150,15 @@ def setup_robot():
     config = SO101FollowerConfig(
         port=ROBOT_PORT,
         id=ROBOT_ID,  # Use same calibration as training
+        max_relative_target=max_speed,  # Limit movement speed per step
     )
     robot = SO101Follower(config)
     robot.connect()
     
-    print("Robot connected!")
+    if max_speed:
+        print(f"Robot connected! (max_speed={max_speed})")
+    else:
+        print("Robot connected! (full speed)")
     return robot
 
 
@@ -283,6 +292,8 @@ def main():
     parser.add_argument("--duration", type=int, default=30, help="Duration in seconds")
     parser.add_argument("--task", type=str, default=DEFAULT_TASK, help="Task description")
     parser.add_argument("--goal-camera", action="store_true", help="Use goal camera for goal-conditioned policy")
+    parser.add_argument("--max-speed", type=float, default=None, 
+                        help="Limit robot speed (lower=slower). Try 5-10 for slow, omit for full speed")
     parser.add_argument("--dry-run", action="store_true", help="Test without robot")
     args = parser.parse_args()
     
@@ -325,7 +336,7 @@ def main():
     
     # Setup hardware
     front_camera, top_camera, goal_camera = setup_cameras(use_goal_camera=args.goal_camera)
-    robot = setup_robot()
+    robot = setup_robot(max_speed=args.max_speed)
     
     try:
         # Run inference
