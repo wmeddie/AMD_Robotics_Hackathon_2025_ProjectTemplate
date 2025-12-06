@@ -201,15 +201,24 @@ def run_inference_loop(policy, preprocessor, postprocessor, front_camera, top_ca
             # Postprocess action (unnormalize)
             action = postprocessor(action)
             
-            # action is tensor [action_dim]
-            action_np = action["action"].cpu().numpy()
+            # Get action tensor and convert to numpy
+            action_tensor = action["action"]
+            # Handle different tensor shapes: [action_dim], [1, action_dim], [batch, chunk, action_dim]
+            if action_tensor.dim() == 1:
+                action_np = action_tensor.cpu().numpy()
+            elif action_tensor.dim() == 2:
+                action_np = action_tensor[0].cpu().numpy()  # Take first from batch
+            else:
+                action_np = action_tensor[0, 0].cpu().numpy()  # Take first from batch and chunk
             
-            # Send to robot
-            robot.send_action({"action": action_np})
+            # Send to robot - convert to dict with motor names
+            motor_names = ["shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll", "gripper"]
+            action_dict = {name: float(action_np[i]) for i, name in enumerate(motor_names)}
+            robot.send_action(action_dict)
             
             step += 1
             if step % 10 == 0:
-                print(f"Step {step}: action = {action_np}")
+                print(f"Step {step}: action = {action_np[:3]}...")
             
             # Maintain control frequency
             elapsed = time.time() - loop_start
