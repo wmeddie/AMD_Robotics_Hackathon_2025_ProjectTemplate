@@ -177,6 +177,10 @@ def run_inference_loop(policy, preprocessor, postprocessor, front_camera, top_ca
     print(f"Task: {task}")
     print("Press Ctrl+C to stop\n")
     
+    # Reset policy action queue before starting
+    policy.reset()
+    print("Policy reset.")
+    
     dt = 1.0 / control_hz
     start_time = time.time()
     step = 0
@@ -235,7 +239,7 @@ def run_inference_loop(policy, preprocessor, postprocessor, front_camera, top_ca
             
             step += 1
             if step % 10 == 0:
-                print(f"Step {step}: action = {action_np[:3]}...")
+                print(f"Step {step}: action = {action_np}")
             
             # Maintain control frequency
             elapsed = time.time() - loop_start
