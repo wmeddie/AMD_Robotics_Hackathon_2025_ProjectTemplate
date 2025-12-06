@@ -39,6 +39,8 @@ DEFAULT_ROBOT = "so101_follower"
 DEFAULT_FPS = 30
 DEFAULT_DATA_DIR = "./data"
 DEFAULT_GOALS_DIR = "./goals"
+DEFAULT_HF_NAMESPACE = "wmeddie"  # HuggingFace username/org for datasets
+DEFAULT_DATASET_NAME = "zenbot"   # Base dataset name
 
 # Robot hardware configuration
 ROBOT_PORT = "/dev/ttyACM1"
@@ -276,7 +278,7 @@ def record_skill_dataset(
         repo_id: HuggingFace repo ID (default: local/{skill})
     """
     task_name = SKILL_TASK_NAMES.get(skill, skill.replace("_", " ").title())
-    repo_id = repo_id or f"local/{skill}"
+    repo_id = repo_id or f"{DEFAULT_HF_NAMESPACE}/{DEFAULT_DATASET_NAME}"
     
     # Build camera config string
     cameras_config = (
