@@ -29,7 +29,7 @@ except ImportError:
     print("Warning: LeRobot not installed. Using fallback OpenCV capture.")
 
 
-SKILL_TYPES = ["flatten", "zigzag", "circle", "stamp", "place_rock"]
+SKILL_TYPES = ["flatten", "rake", "zigzag", "circle", "stamp", "place_rock"]
 
 # Camera indices for the Zen Garden setup (all 640x480)
 CAMERA_GOAL = 8        # Camera for capturing goal images
