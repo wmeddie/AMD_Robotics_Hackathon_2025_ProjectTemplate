@@ -228,9 +228,9 @@ def run_inference_loop(policy, preprocessor, postprocessor, front_camera, top_ca
             else:
                 action_np = action_tensor[0, 0].cpu().numpy()  # Take first from batch and chunk
             
-            # Send to robot - convert to dict with motor names
+            # Send to robot - convert to dict with motor names ending in .pos
             motor_names = ["shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll", "gripper"]
-            action_dict = {name: float(action_np[i]) for i, name in enumerate(motor_names)}
+            action_dict = {f"{name}.pos": float(action_np[i]) for i, name in enumerate(motor_names)}
             robot.send_action(action_dict)
             
             step += 1
