@@ -41,12 +41,20 @@ except ImportError:
 # Import our modules
 from planner import ZenGardenPlanner, MockPlanner, create_planner, SkillCall
 from skill_executor import SkillExecutor, create_executor
+from capture_goal import (
+    CAMERA_GOAL, CAMERA_OVERHEAD, CAMERA_ARM,
+    CAMERA_WIDTH, CAMERA_HEIGHT
+)
+
+# Camera usage in demo:
+# - CAMERA_OVERHEAD (4): Used by planner to compare current state vs goal
+# - CAMERA_ARM (6): Used by skill policies for observations during execution
 
 
 class Camera:
     """Simple camera interface for capturing observations."""
     
-    def __init__(self, camera_index: int = 0, width: int = 640, height: int = 480):
+    def __init__(self, camera_index: int = CAMERA_OVERHEAD, width: int = CAMERA_WIDTH, height: int = CAMERA_HEIGHT):
         self.camera_index = camera_index
         self.width = width
         self.height = height

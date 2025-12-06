@@ -31,6 +31,13 @@ except ImportError:
 
 SKILL_TYPES = ["flatten", "zigzag", "circle", "stamp", "place_rock"]
 
+# Camera indices for the Zen Garden setup (all 640x480)
+CAMERA_GOAL = 8        # Camera for capturing goal images
+CAMERA_OVERHEAD = 4    # Overhead view camera (for planner)
+CAMERA_ARM = 6         # Robot arm camera (observation during execution)
+CAMERA_WIDTH = 640
+CAMERA_HEIGHT = 480
+
 
 class GoalImageCapture:
     """Captures goal images for goal-conditioned policy training."""
@@ -260,20 +267,20 @@ def main():
     parser.add_argument(
         "--camera",
         type=int,
-        default=0,
-        help="Camera index to use (default: 0)"
+        default=CAMERA_GOAL,
+        help=f"Camera index to use (default: {CAMERA_GOAL} for goal capture)"
     )
     parser.add_argument(
         "--width",
         type=int,
-        default=640,
-        help="Image width (default: 640)"
+        default=CAMERA_WIDTH,
+        help=f"Image width (default: {CAMERA_WIDTH})"
     )
     parser.add_argument(
         "--height",
         type=int,
-        default=480,
-        help="Image height (default: 480)"
+        default=CAMERA_HEIGHT,
+        help=f"Image height (default: {CAMERA_HEIGHT})"
     )
     parser.add_argument(
         "--batch",

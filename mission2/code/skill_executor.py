@@ -25,6 +25,7 @@ except ImportError:
 
 # Import inference module
 from inference import SkillPolicy, MultiSkillPolicy
+from capture_goal import CAMERA_ARM, CAMERA_WIDTH, CAMERA_HEIGHT
 
 
 # Tool positions in robot workspace (normalized coordinates)

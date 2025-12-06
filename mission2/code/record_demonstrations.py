@@ -28,13 +28,22 @@ from pathlib import Path
 from typing import Optional
 
 # Import our goal capture utility
-from capture_goal import GoalImageCapture, SKILL_TYPES
+from capture_goal import (
+    GoalImageCapture, SKILL_TYPES,
+    CAMERA_GOAL, CAMERA_OVERHEAD, CAMERA_ARM,
+    CAMERA_WIDTH, CAMERA_HEIGHT
+)
 
 # Configuration
 DEFAULT_ROBOT = "so101"
 DEFAULT_FPS = 30
 DEFAULT_DATA_DIR = "./data"
 DEFAULT_GOALS_DIR = "./goals"
+
+# Camera setup:
+# - CAMERA_GOAL (8): For capturing goal images
+# - CAMERA_OVERHEAD (4): Overhead view for planner
+# - CAMERA_ARM (6): Robot arm camera for observations
 
 
 class DemonstrationRecorder:
@@ -47,7 +56,7 @@ class DemonstrationRecorder:
         fps: int = DEFAULT_FPS,
         data_dir: str = DEFAULT_DATA_DIR,
         goals_dir: str = DEFAULT_GOALS_DIR,
-        camera_index: int = 0
+        camera_index: int = CAMERA_GOAL  # Use goal camera by default
     ):
         """
         Initialize the demonstration recorder.
@@ -318,7 +327,7 @@ def main():
     parser.add_argument(
         "--camera",
         type=int,
-        default=0,
+        default=CAMERA_GOAL,
         help="Camera index for goal capture (default: 0)"
     )
     parser.add_argument(
