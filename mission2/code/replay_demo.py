@@ -4,12 +4,18 @@ Replay recorded demonstrations with LLM-based skill selection.
 
 Flow:
 1. Capture overhead camera image
-2. Send to Claude to decide: "horizontal" or "vertical" rake pattern
-3. Replay the corresponding demonstration from the dataset
+2. Send to Claude to analyze garden and select appropriate skill
+3. Replay the corresponding demonstration from the skill's dataset
 
 Usage:
-    python replay_demo.py --dataset wmeddie/zenbot_rake1 --episode 0
-    python replay_demo.py --auto  # LLM selects based on camera
+    # Manual replay from specific dataset
+    python replay_demo.py --dataset wmeddie/zenbot_rake_horizontal --episode 0
+    
+    # Auto mode: Claude selects skill based on camera
+    python replay_demo.py --auto
+    
+    # Continuous auto mode
+    python replay_demo.py --auto --loop
 """
 
 import argparse
@@ -18,6 +24,7 @@ import numpy as np
 import torch
 import base64
 import io
+import random
 
 # Camera/Robot config
 CAMERA_ARM = 6
@@ -25,6 +32,19 @@ CAMERA_OVERHEAD = 4
 CAMERA_GOAL = 8
 ROBOT_PORT = "/dev/ttyACM1"
 ROBOT_ID = "my_awesome_follower_arm"
+
+# Skill-to-dataset mapping
+# Each skill maps to a HuggingFace dataset repo
+SKILL_DATASETS = {
+    "rake_horizontal": "wmeddie/zenbot_rake_horizontal",
+    "rake_vertical": "wmeddie/zenbot_rake_vertical",
+    "flatten": "wmeddie/zenbot_flatten",
+    "place_rock": "wmeddie/zenbot_place_rock",
+    "circle": "wmeddie/zenbot_circle",
+}
+
+# Available skills for Claude to choose from
+AVAILABLE_SKILLS = ["rake_horizontal", "rake_vertical"]
 
 
 def load_episode_actions(dataset_repo: str, episode_idx: int):
@@ -95,19 +115,24 @@ def capture_image_base64(camera):
     return base64.b64encode(buffer).decode('utf-8')
 
 
-def ask_claude_for_pattern(image_base64: str) -> str:
-    """Ask Claude to analyze the image and decide on pattern."""
+def ask_claude_for_skill(image_base64: str, available_skills: list = None) -> str:
+    """Ask Claude to analyze the zen garden and select the best skill to execute."""
+    if available_skills is None:
+        available_skills = AVAILABLE_SKILLS
+    
     try:
         import anthropic
     except ImportError:
-        print("anthropic not installed, defaulting to 'horizontal'")
-        return "horizontal"
+        print("anthropic not installed, defaulting to random skill")
+        return random.choice(available_skills)
     
     client = anthropic.Anthropic()
     
+    skills_list = "\n".join(f"- {skill}" for skill in available_skills)
+    
     message = client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=100,
+        max_tokens=200,
         messages=[
             {
                 "role": "user",
@@ -122,15 +147,19 @@ def ask_claude_for_pattern(image_base64: str) -> str:
                     },
                     {
                         "type": "text",
-                        "text": """Look at this zen garden image. I need to rake it.
-Should I rake HORIZONTAL lines (left-right) or VERTICAL lines (up-down)?
+                        "text": f"""Analyze this zen garden overhead image. I have a robot arm that can perform different skills to rake the sand.
+
+Available skills:
+{skills_list}
+
+Based on the current state of the garden, which skill should the robot perform next?
 
 Consider:
-- Current state of the sand
-- What would look better
-- Variety if there are existing patterns
+- Current state of the sand (smooth, already has patterns, messy?)
+- If there are existing lines, would perpendicular lines create a nice grid pattern?
+- Variety and aesthetics
 
-Reply with exactly one word: horizontal or vertical"""
+Reply with ONLY the skill name, nothing else. For example: rake_horizontal"""
                     }
                 ]
             }
@@ -138,13 +167,24 @@ Reply with exactly one word: horizontal or vertical"""
     )
     
     response = message.content[0].text.strip().lower()
+    
+    # Match response to available skills
+    for skill in available_skills:
+        if skill in response:
+            return skill
+    
+    # Fallback: check for partial matches
     if "horizontal" in response:
-        return "horizontal"
-    elif "vertical" in response:
-        return "vertical"
-    else:
-        print(f"Unexpected response: {response}, defaulting to horizontal")
-        return "horizontal"
+        for skill in available_skills:
+            if "horizontal" in skill:
+                return skill
+    if "vertical" in response:
+        for skill in available_skills:
+            if "vertical" in skill:
+                return skill
+    
+    print(f"Unexpected response: {response}, defaulting to {available_skills[0]}")
+    return available_skills[0]
 
 
 def replay_actions(robot, actions, fps, max_speed=None):
@@ -177,58 +217,136 @@ def replay_actions(robot, actions, fps, max_speed=None):
     print(f"Replay complete!")
 
 
+def get_episode_count(dataset_repo: str) -> int:
+    """Get the number of episodes in a dataset."""
+    from huggingface_hub import hf_hub_download
+    import pandas as pd
+    
+    try:
+        parquet_path = hf_hub_download(
+            repo_id=dataset_repo,
+            filename="data/chunk-000/file-000.parquet",
+            repo_type="dataset"
+        )
+        df = pd.read_parquet(parquet_path)
+        return df["episode_index"].max() + 1
+    except Exception as e:
+        print(f"Warning: Could not get episode count: {e}")
+        return 1
+
+
 def main():
     parser = argparse.ArgumentParser(description="Replay demonstrations with LLM selection")
-    parser.add_argument("--dataset", type=str, default="wmeddie/zenbot_rake1",
-                        help="HuggingFace dataset repo")
+    parser.add_argument("--dataset", type=str, default=None,
+                        help="HuggingFace dataset repo (overrides skill-based selection)")
+    parser.add_argument("--skill", type=str, default=None,
+                        choices=list(SKILL_DATASETS.keys()),
+                        help="Skill to replay (uses skill's dataset)")
     parser.add_argument("--episode", type=int, default=None,
-                        help="Specific episode to replay (0-indexed)")
-    parser.add_argument("--horizontal-episode", type=int, default=0,
-                        help="Episode index for horizontal pattern")
-    parser.add_argument("--vertical-episode", type=int, default=1,
-                        help="Episode index for vertical pattern")
+                        help="Specific episode to replay (0-indexed, default: random)")
     parser.add_argument("--auto", action="store_true",
-                        help="Use Claude to select pattern based on camera")
+                        help="Use Claude to select skill based on camera")
+    parser.add_argument("--loop", action="store_true",
+                        help="Continuously loop: analyze -> execute -> repeat")
+    parser.add_argument("--loop-delay", type=float, default=3.0,
+                        help="Delay between loop iterations (default: 3s)")
     parser.add_argument("--max-speed", type=float, default=None,
                         help="Limit robot speed")
     parser.add_argument("--fps", type=int, default=None,
                         help="Override replay FPS (default: use dataset FPS)")
+    parser.add_argument("--skills", type=str, nargs="+",
+                        default=AVAILABLE_SKILLS,
+                        help=f"Skills to consider in auto mode (default: {AVAILABLE_SKILLS})")
     args = parser.parse_args()
     
     # Setup robot
     print("Setting up robot...")
     robot = setup_robot(max_speed=args.max_speed)
     
+    camera = None
+    if args.auto:
+        print("Setting up overhead camera for LLM analysis...")
+        camera = setup_camera(CAMERA_OVERHEAD)
+    
     try:
-        if args.episode is not None:
-            # Replay specific episode
-            episode_idx = args.episode
-            print(f"Replaying episode {episode_idx}")
-        elif args.auto:
-            # Use Claude to decide
-            print("Setting up camera for LLM analysis...")
-            camera = setup_camera(CAMERA_OVERHEAD)
+        iteration = 0
+        while True:
+            iteration += 1
+            if args.loop:
+                print(f"\n{'='*50}")
+                print(f"ITERATION {iteration}")
+                print(f"{'='*50}")
             
-            print("Capturing image...")
-            img_b64 = capture_image_base64(camera)
-            camera.disconnect()
+            # Determine which dataset/episode to use
+            if args.dataset:
+                # Explicit dataset provided
+                dataset_repo = args.dataset
+                episode_idx = args.episode if args.episode is not None else 0
+                print(f"Using explicit dataset: {dataset_repo}, episode {episode_idx}")
+                
+            elif args.skill:
+                # Explicit skill provided
+                if args.skill not in SKILL_DATASETS:
+                    print(f"Error: No dataset configured for skill '{args.skill}'")
+                    print(f"Available skills: {list(SKILL_DATASETS.keys())}")
+                    break
+                dataset_repo = SKILL_DATASETS[args.skill]
+                episode_idx = args.episode if args.episode is not None else 0
+                print(f"Using skill '{args.skill}': {dataset_repo}, episode {episode_idx}")
+                
+            elif args.auto:
+                # Ask Claude to decide
+                print("Capturing image for analysis...")
+                img_b64 = capture_image_base64(camera)
+                
+                print("Asking Claude to select skill...")
+                skill = ask_claude_for_skill(img_b64, args.skills)
+                print(f"Claude selected: {skill}")
+                
+                if skill not in SKILL_DATASETS:
+                    print(f"Warning: No dataset for skill '{skill}', skipping")
+                    if not args.loop:
+                        break
+                    time.sleep(args.loop_delay)
+                    continue
+                
+                dataset_repo = SKILL_DATASETS[skill]
+                
+                # Random episode from the dataset
+                num_episodes = get_episode_count(dataset_repo)
+                episode_idx = random.randint(0, num_episodes - 1)
+                print(f"Selected random episode {episode_idx} from {num_episodes} available")
+                
+            else:
+                # Default: first available skill
+                default_skill = AVAILABLE_SKILLS[0]
+                dataset_repo = SKILL_DATASETS[default_skill]
+                episode_idx = args.episode if args.episode is not None else 0
+                print(f"Using default skill '{default_skill}': {dataset_repo}")
             
-            print("Asking Claude for pattern recommendation...")
-            pattern = ask_claude_for_pattern(img_b64)
-            print(f"Claude recommends: {pattern}")
+            # Load and replay
+            try:
+                actions, dataset_fps = load_episode_actions(dataset_repo, episode_idx)
+                replay_fps = args.fps if args.fps else dataset_fps
+                replay_actions(robot, actions, replay_fps, args.max_speed)
+            except Exception as e:
+                print(f"Error during replay: {e}")
+                if not args.loop:
+                    raise
             
-            episode_idx = args.horizontal_episode if pattern == "horizontal" else args.vertical_episode
-        else:
-            # Default to horizontal
-            episode_idx = args.horizontal_episode
-        
-        # Load and replay
-        actions, dataset_fps = load_episode_actions(args.dataset, episode_idx)
-        replay_fps = args.fps if args.fps else dataset_fps
-        
-        replay_actions(robot, actions, replay_fps, args.max_speed)
-        
+            # Exit or loop
+            if not args.loop:
+                break
+            
+            print(f"\nWaiting {args.loop_delay}s before next iteration...")
+            print("Press Ctrl+C to stop")
+            time.sleep(args.loop_delay)
+                
+    except KeyboardInterrupt:
+        print("\nStopped by user")
     finally:
+        if camera:
+            camera.disconnect()
         print("Disconnecting robot...")
         robot.disconnect()
         print("Done!")

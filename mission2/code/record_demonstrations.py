@@ -58,6 +58,8 @@ TELEOP_ID = "my_awesome_leader_arm"
 SKILL_TASK_NAMES = {
     "flatten": "Flatten Sand",
     "rake": "Rake Sand",
+    "rake_horizontal": "Rake Horizontal Lines",
+    "rake_vertical": "Rake Vertical Lines",
     "zigzag": "Draw Zigzag",
     "circle": "Draw Circles",
     "stamp": "Stamp Triangle",
