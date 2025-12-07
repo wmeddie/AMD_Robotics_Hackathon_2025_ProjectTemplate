@@ -290,9 +290,8 @@ def record_skill_dataset(
     """
     task_name = SKILL_TASK_NAMES.get(skill, skill.replace("_", " ").title())
     
-    # Use local repo_id for recording, HF repo_id for pushing
-    local_repo_id = f"local/{skill}"
-    hf_repo_id = repo_id or f"{DEFAULT_HF_NAMESPACE}/zenbot_{skill}"
+    # Use provided repo_id or generate default
+    dataset_repo_id = repo_id or f"{DEFAULT_HF_NAMESPACE}/zenbot_{skill}"
     
     # Build camera config string (3 cameras: front, top, and goal)
     # The goal camera captures the target pattern that the robot should achieve
@@ -317,41 +316,29 @@ def record_skill_dataset(
         "--display_data=true",
         f"--dataset.num_episodes={num_episodes}",
         f"--dataset.single_task={task_name}",
-        f"--dataset.repo_id={local_repo_id}",
+        f"--dataset.repo_id={dataset_repo_id}",
         f"--dataset.episode_time_s={episode_time_s}",
         "--dataset.reset_time_s=5",  # Reduced from 60s default
-        "--dataset.push_to_hub=false",  # Save locally only
+        f"--dataset.push_to_hub={'true' if push_to_hub else 'false'}",
     ]
     
     print(f"\n{'#'*60}")
     print(f"# RECORDING: {skill.upper()}")
     print(f"# Task: {task_name}")
     print(f"# Episodes: {num_episodes}")
-    print(f"# Local: {local_repo_id}")
+    print(f"# Repo: {dataset_repo_id}")
     if push_to_hub:
-        print(f"# Will push to: {hf_repo_id}")
+        print(f"# Will push to HuggingFace after recording")
     print(f"{'#'*60}")
     print(f"\nCommand:\n{' '.join(cmd)}\n")
     
     try:
         subprocess.run(cmd, check=True)
         print(f"\nRecording complete for {skill}!")
+        print(f"Dataset saved to: ~/.cache/huggingface/lerobot/{dataset_repo_id}")
         
-        # Push to HuggingFace if requested
         if push_to_hub:
-            print(f"\nPushing to HuggingFace: {hf_repo_id}")
-            push_cmd = [
-                "huggingface-cli", "upload",
-                hf_repo_id,
-                f"~/.cache/huggingface/lerobot/{local_repo_id}",
-                "--repo-type", "dataset"
-            ]
-            print(f"Command: {' '.join(push_cmd)}")
-            subprocess.run(push_cmd, check=True)
-            print(f"Pushed to {hf_repo_id}!")
-        else:
-            print(f"\nData saved locally. To push to HuggingFace later:")
-            print(f"  huggingface-cli upload {hf_repo_id} ~/.cache/huggingface/lerobot/{local_repo_id} --repo-type dataset")
+            print(f"Dataset pushed to HuggingFace: {dataset_repo_id}")
         
         return True
     except subprocess.CalledProcessError as e:
