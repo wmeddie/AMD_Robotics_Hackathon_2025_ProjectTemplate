@@ -14,10 +14,36 @@ Our system combines intuitive UI design, computer vision, and robot inference to
 
 ---
 
-## Demo Video
+## Demo Videos
 
 - [ZenBot Demo — Rock Placement](https://youtube.com/shorts/2LpQgoojOZM?si=JQuTWASMso2PRlKe)
+- [ZenBot Demo — Raking](https://youtu.be/5beCurLB_pI)
+- [ZenBot Demo — Full Sequence](https://youtube.com/shorts/QdS7tBSYhcU)
 - [ZenBot Demo — Raking Patterns](https://www.youtube.com/watch?v=PLaxTkR1wUs)
+
+---
+
+## Why This Matters
+
+The architecture we developed—**an LLM agent orchestrating fine-tuned SmolVLA policies**—has applications far beyond zen gardens. By separating high-level reasoning (the agent) from low-level motor skills (the trained policies), we create a flexible system that can be adapted to many domains:
+
+### Agriculture
+- **Precision Harvesting**: An agent could analyze crop images and coordinate picking policies for different fruits/vegetables
+- **Weeding & Planting**: Plan optimal planting patterns while trained policies handle the physical manipulation
+- **Greenhouse Management**: Orchestrate pruning, watering, and harvesting tasks across different plant types
+
+### Scientific Research
+- **Laboratory Automation**: An agent could plan complex experimental protocols while policies handle pipetting, sample handling, and equipment operation
+- **Sample Preparation**: Coordinate multi-step preparation procedures with trained manipulation skills
+- **Field Research**: Deploy robots for environmental sampling with agent-based adaptive planning
+
+### Key Advantages of This Architecture
+1. **Modularity**: New skills can be added by training additional policies without retraining the entire system
+2. **Reasoning + Execution**: LLMs provide planning and error recovery while VLA policies provide reliable motor execution
+3. **Scalability**: The same agent architecture can orchestrate dozens of specialized policies
+4. **Accessibility**: Non-experts can interact through natural language or simple UIs while the system handles complex coordination
+
+This hackathon project demonstrates that **affordable hardware (SO-101) + open-source models (SmolVLA) + agent orchestration** can create capable robotic systems for real-world tasks.
 
 ---
 
