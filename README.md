@@ -17,8 +17,8 @@ Our system combines intuitive UI design, computer vision, and robot inference to
 ## Demo Videos
 
 - [ZenBot Demo — Rock Placement](https://youtube.com/shorts/2LpQgoojOZM?si=JQuTWASMso2PRlKe)
-- [ZenBot Demo — Raking](https://youtu.be/5beCurLB_pI)
-- [ZenBot Demo — Full Sequence](https://youtube.com/shorts/QdS7tBSYhcU)
+- [ZenBot Demo — Raking](https://youtube.com/shorts/QdS7tBSYhcU)
+- [ZenBot Demo — Full Sequence](https://youtu.be/5beCurLB_pI)
 - [ZenBot Demo — Raking Patterns](https://www.youtube.com/watch?v=PLaxTkR1wUs)
 
 ---
