@@ -1,51 +1,87 @@
 # AMD_Robotics_Hackathon_2025_ZenBot
 
-**Title:** AMD_RoboticHackathon2025-ZenBot
+## Team Information
 
-**Team:** ZenBot, (Eduardo Gonzalez, Masahiko NAKANO)
+**Team:** ZenBot (Team 25)  
+**Members:** Eduardo Gonzalez, Masahiko Nakano
 
-## Summary
+**Summary:**  
+ZenBot is an autonomous robotic system that creates **Zen garden patterns** (Karesansui).  
+Our system combines intuitive UI design, computer vision, and robot inference to allow anyone to create a traditional Japanese Zen garden through a robot.
 
-ZenBot is a project that makes your SO-101 create beautiful zen gardens (Kare-san-sui). With a small sand pit within reach of your SO-101 it will go step-by-step building the zen garden design you provide. It accomplishes this with a planning agent and then a set of fine tuned SmolVLA models that know how to use tools to produce the desired design. When it is done, it will place a rock in the center.
+![ZenBot places a rock.](assets_for_doc/image_zenbot_arm.png)
+![ZenBot's UI](assets_for_doc/image_zenbot_ui.png)
 
-![ZenBot UI](ui.png)
+---
 
-## Architecture
+## Demo Video
+
+[ZenBot Demo — Rock Placement](https://youtube.com/shorts/2LpQgoojOZM?si=JQuTWASMso2PRlKe)
+
+---
+
+## Submission Details
+
+### 1. Mission Description
+
+ZenBot aims to automate and augment the process of creating **Karesansui (Japanese Zen gardens)**, traditionally crafted by experienced gardeners.  
+Our mission is to demonstrate how robotics + vision + user interfaces can help automate creative manual tasks such as:
+
+- Drawing raked sand patterns  
+- Planning spatial layouts  
+- Reproducing design templates  
+- Translating real-world garden images into executable robot instructions  
+
+This system can be used for **education**, **cultural preservation**, **artistic prototyping**, and **low-cost automated landscaping demos**.
+
+---
+
+### 2. Creativity
+
+- The project blends **ancient Japanese aesthetics** with modern robotics—an unusual and culturally rich mission within the hackathon.
+- We built a **Zen Garden Planner UI**, combining UX minimalism with robotics control.  
+  Users can manually build their garden patterns by adding steps such as *Draw Lines*, and *Place Rock*.
+- We added a unique **Auto-Run ZenBot from Camera** mode:
+  The robot captures an image via camera, analyzes the garden layout, **auto-generates a sequence of drawing and placement steps**, and immediately executes them.
+
+---
+
+### 3. Technical Implementations
+
+#### Architecture
 
 The system consists of three main components:
 
 1. **Web UI** - A Flask-based interface for designing zen gardens
-2. **Planning Agent** - An LLM-powered agent that orchestrates the robot actions
+2. **Planning Agent** - An LLM-powered agent (via Xircuits) that orchestrates the robot actions
 3. **SmolVLA Policies** - Fine-tuned vision-language-action models for specific skills (rake, place rock)
 
 ![Agent Architecture](agent.png)
 
-## How To Run
+#### Teleoperation / Dataset Capture
 
-To run the system, first create a virtual environment and install the requirements inside the code, ui, and agent directories.
+We first collected fundamental motion trajectories for creating a Zen garden through teleoperation, including:
+- Raking straight lines in the sand
+- Placing rocks in predefined locations
 
-### 1. Start the Planning Agent
-```bash
-cd mission2/agent/
-python AgentTemplate.py
-```
+For the raking actions in particular, we designed and 3D-printed a custom attachment to ensure that the SO-101 could grasp and manipulate the rake robustly.  
+(**Acknowledgement**: We would like to express our gratitude to Robostadion for their support in 3D-printing the custom attachment used for raking operations.)
 
-### 2. Start the Web UI
-```bash
-cd mission2/ui
-pip install flask requests
-python app.py
-```
+To improve robustness and reduce overfitting during teleoperation, we intentionally placed manipulable objects (a rock and tools) at various positions around the sandbox each time the robot was asked to grasp them. This ensured that the robot experienced diverse initial conditions rather than a fixed setup.
 
-### 3. Run a Policy Directly (Optional)
-```bash
-cd mission2/code
-python test_policy.py --checkpoint wmeddie/smolvla_rake8 --max-speed 10
-```
+We also used two cameras throughout data collection:
+- A wrist-mounted camera attached near the gripper
+- An overhead camera providing a full top-down view of the sandbox
 
-You should be able to use the app to create a design and click the button to create it. (Not all designs in the UI may be supported.)
+Before grasping an object, the teleoperator performed deliberate sweeping motions with the wrist-mounted camera to visually search the surrounding area and locate the target object. After grasping, the operator repositioned the arm so that the overhead camera could clearly observe the grasped object, allowing confirmation of grasp correctness (position and orientation).
 
-## Training
+These procedures significantly improved the robustness and reliability of object handling in our dataset.
+
+![ZenBot Teleoperation](assets_for_doc/image_zenbot_teleoperation.png)
+
+---
+
+#### Training
 
 We fine-tuned SmolVLA from `lerobot/smolvla_base` (pretrained on 10M frames of community robot data) using the LeRobot framework on AMD MI300X GPUs.
 
@@ -67,15 +103,72 @@ lerobot-train \
   --rename_map='{"observation.images.front": "observation.images.camera1", "observation.images.top": "observation.images.camera2"}'
 ```
 
-## Datasets & Models
+---
 
-**Datasets (HuggingFace)**
-- https://huggingface.co/datasets/wmeddie/zenbot_place_rock3
-- https://huggingface.co/datasets/wmeddie/zenbot_rake8
+#### Inference
 
-**Models (HuggingFace)**
-- https://huggingface.co/wmeddie/smolvla_place_rock3
-- https://huggingface.co/wmeddie/smolvla_rake8
+Based on the trained model, the robot performs only primitive actions, such as drawing lines or placing rocks.
+The high-level action planning logic is handled outside the model (via the UI or an external agent), which determines the full sequence of operations for creating the Zen garden.
+This design choice is intentional: the SmolVLA model we used for training is relatively small, and offloading the role of a high-level orchestrator allows us to achieve more reliable and robust execution.
+
+---
+
+### 4. Ease of Use
+
+- **Generalizable across environments:**  
+  ZenBot operates on any flat drawing surface and can adapt to different sizes of sand beds, rakes, and drawing tools.
+
+- **Flexible architecture:**  
+  The step representation is lightweight and easily extended with new operations (e.g., spirals, waves, complex sand patterns).
+
+- **Simple interface:**  
+  Users interact only through:
+  - Manual buttons (*Draw Lines*, *Draw Circles*, *Place Rock*)  
+  - The **Auto-Run ZenBot from Camera** button  
+  - The **Start ZenBot** button for execution  
+
+- **No robotics expertise required:**  
+  The system abstracts robot control into simple actions, making it approachable even for non-technical users.
+
+---
+
+## How To Run
+
+### 1. Start the Planning Agent
+```bash
+cd mission2/agent/
+pip install -r requirements.txt
+python AgentTemplate.py
+```
+
+### 2. Start the Web UI
+```bash
+cd mission2/ui
+pip install flask requests
+python app.py
+```
+
+### 3. Run a Policy Directly (Optional)
+```bash
+cd mission2/code
+python test_policy.py --checkpoint wmeddie/smolvla_rake8 --max-speed 10
+```
+
+You should be able to use the app to create a design and click the button to create it. (Not all designs in the UI may be supported.)
+
+---
+
+## Datasets & Models (HuggingFace)
+
+**Datasets**
+- [Rock Placement Dataset](https://huggingface.co/datasets/wmeddie/zenbot_place_rock3)
+- [Raking Motion Dataset](https://huggingface.co/datasets/wmeddie/zenbot_rake8)
+
+**Models**
+- [Rock Placement Policy Model](https://huggingface.co/wmeddie/smolvla_place_rock3_from_base)
+- [Raking Policy Model](https://huggingface.co/wmeddie/smolvla_rake8_from_base)
+
+---
 
 ## Directory Structure
 
@@ -84,6 +177,10 @@ AMD_Robotics_Hackathon_2025_ProjectTemplate/
 ├── README.md
 ├── agent.png
 ├── ui.png
+├── assets_for_doc/
+│   ├── image_zenbot_arm.png
+│   ├── image_zenbot_ui.png
+│   └── image_zenbot_teleoperation.png
 ├── mission1/
 │   ├── code/
 │   └── wandb/
@@ -100,11 +197,15 @@ AMD_Robotics_Hackathon_2025_ProjectTemplate/
         └── static/
 ```
 
+---
+
 ## WandB Training Logs
 
 Training runs are logged to WandB under project `zenbot`:
 - `smolvla_place_rock3_from_base` - Place rock skill (50 episodes)
 - `smolvla_rake8_from_base` - Rake skill (25 episodes)
+
+---
 
 ## Hardware
 
