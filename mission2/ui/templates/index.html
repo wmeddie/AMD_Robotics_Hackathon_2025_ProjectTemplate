@@ -124,6 +124,8 @@
       <h2 class="spacingB">Run</h2>
       <button id="btnRun" class="primary">Start ZenBot</button>
       <button id="btnAutoRun">Auto-Run ZenBot from Camera</button>
+      <h2 class="spacingB">Status</h2>
+      <div id="statusMessage" style="padding: 8px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 4px; font-size: 13px; min-height: 40px;">Ready</div>
     </div>
     <div class="preview-area">
       <h1>ZenBot: The Zen Garden Maker</h1>
@@ -148,11 +150,35 @@
     const btnAutoRun = document.getElementById('btnAutoRun');
 
     const actionHandlers = {
-      draw_lines: async () => waitForMockAction('draw_lines'),
+      draw_lines: async () => executeSkill('rake'),
       draw_large_circle: async () => waitForMockAction('draw_large_circle'),
       draw_small_circles: async () => waitForMockAction('draw_small_circles'),
-      place_rock: async () => waitForMockAction('place_rock')
+      place_rock: async () => executeSkill('place_rock')
     };
+
+    async function executeSkill(skill) {
+      console.log(`Executing skill: ${skill}`);
+      updateStatus(`Executing ${skill}...`);
+      try {
+        const res = await fetch(`/api/execute/${skill}`, { method: 'POST' });
+        const data = await res.json();
+        console.log(`Skill ${skill} result:`, data);
+        updateStatus(`${skill} completed: ${data.result}`);
+        return data;
+      } catch (err) {
+        console.error(`Failed to execute ${skill}:`, err);
+        updateStatus(`Error executing ${skill}`);
+        throw err;
+      }
+    }
+
+    function updateStatus(message) {
+      const statusDiv = document.getElementById('statusMessage');
+      if (statusDiv) {
+        statusDiv.textContent = message;
+      }
+      console.log('Status:', message);
+    }
 
     const permanentlyDisabledButtons = new Set([btnCircle, btnCluster]);
 
@@ -396,12 +422,41 @@
 
       isExecuting = true;
       deactivateDuringExecution();
+      updateStatus('Starting ZenBot AI agent...');
 
       try {
-        await waitForMockAction('auto_run_from_camera');
+        // Start the agent
+        const startRes = await fetch('/api/agent/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Please create a beautiful zen garden with raked lines and a rock.' })
+        });
+        const startData = await startRes.json();
+        updateStatus(startData.message);
+
+        // Poll for status
+        let complete = false;
+        while (!complete) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          const statusRes = await fetch('/api/agent/status');
+          const statusData = await statusRes.json();
+          
+          if (statusData.current_action) {
+            updateStatus(`Executing: ${statusData.current_action}`);
+          }
+          
+          if (!statusData.running) {
+            complete = true;
+            const lastLog = statusData.log[statusData.log.length - 1];
+            if (lastLog) {
+              updateStatus(`Complete: ${lastLog.message || lastLog.result || 'Garden finished!'}`);
+            }
+          }
+        }
       } catch (err) {
         console.error('Failed to auto-run from camera', err);
         window.alert('Auto-run from camera was interrupted. Please try again.');
+        updateStatus('Error during execution');
       } finally {
         isExecuting = false;
         reactivateAfterExecution();
