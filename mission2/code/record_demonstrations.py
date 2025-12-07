@@ -320,7 +320,7 @@ def record_skill_dataset(
         f"--dataset.repo_id={local_repo_id}",
         f"--dataset.episode_time_s={episode_time_s}",
         "--dataset.reset_time_s=5",  # Reduced from 60s default
-        f"--dataset.local_files_only=true",
+        "--dataset.push_to_hub=false",  # Save locally only
     ]
     
     print(f"\n{'#'*60}")
