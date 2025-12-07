@@ -1,0 +1,408 @@
+WARNING:lerobot.configs.policies:Device 'None' is not available. Switching to 'cuda'.
+INFO 2025-12-06 12:14:37 ot_train.py:163 {'batch_size': 8,
+ 'checkpoint_path': None,
+ 'dataset': {'episodes': None,
+             'image_transforms': {'enable': False,
+                                  'max_num_transforms': 3,
+                                  'random_order': False,
+                                  'tfs': {'affine': {'kwargs': {'degrees': [-5.0,
+                                                                            5.0],
+                                                                'translate': [0.05,
+                                                                              0.05]},
+                                                     'type': 'RandomAffine',
+                                                     'weight': 1.0},
+                                          'brightness': {'kwargs': {'brightness': [0.8,
+                                                                                   1.2]},
+                                                         'type': 'ColorJitter',
+                                                         'weight': 1.0},
+                                          'contrast': {'kwargs': {'contrast': [0.8,
+                                                                               1.2]},
+                                                       'type': 'ColorJitter',
+                                                       'weight': 1.0},
+                                          'hue': {'kwargs': {'hue': [-0.05,
+                                                                     0.05]},
+                                                  'type': 'ColorJitter',
+                                                  'weight': 1.0},
+                                          'saturation': {'kwargs': {'saturation': [0.5,
+                                                                                   1.5]},
+                                                         'type': 'ColorJitter',
+                                                         'weight': 1.0},
+                                          'sharpness': {'kwargs': {'sharpness': [0.5,
+                                                                                 1.5]},
+                                                        'type': 'SharpnessJitter',
+                                                        'weight': 1.0}}},
+             'repo_id': 'wmeddie/zenbot_place_rock1',
+             'revision': None,
+             'root': None,
+             'streaming': False,
+             'use_imagenet_stats': True,
+             'video_backend': 'pyav'},
+ 'env': None,
+ 'eval': {'batch_size': 50, 'n_episodes': 50, 'use_async_envs': False},
+ 'eval_freq': 20000,
+ 'job_name': 'smolvla',
+ 'log_freq': 200,
+ 'num_workers': 4,
+ 'optimizer': {'betas': [0.9, 0.95],
+               'eps': 1e-08,
+               'grad_clip_norm': 10,
+               'lr': 0.0001,
+               'type': 'adamw',
+               'weight_decay': 1e-10},
+ 'output_dir': 'outputs/smolvla_place_rock',
+ 'policy': {'adapt_to_pi_aloha': False,
+            'add_image_special_tokens': False,
+            'attention_mode': 'cross_attn',
+            'chunk_size': 50,
+            'device': 'cuda',
+            'empty_cameras': 0,
+            'expert_width_multiplier': 0.75,
+            'freeze_vision_encoder': True,
+            'input_features': {},
+            'license': None,
+            'load_vlm_weights': False,
+            'max_action_dim': 32,
+            'max_period': 4.0,
+            'max_state_dim': 32,
+            'min_period': 0.004,
+            'n_action_steps': 50,
+            'n_obs_steps': 1,
+            'normalization_mapping': {'ACTION': <NormalizationMode.MEAN_STD: 'MEAN_STD'>,
+                                      'STATE': <NormalizationMode.MEAN_STD: 'MEAN_STD'>,
+                                      'VISUAL': <NormalizationMode.IDENTITY: 'IDENTITY'>},
+            'num_expert_layers': -1,
+            'num_steps': 10,
+            'num_vlm_layers': 16,
+            'optimizer_betas': [0.9, 0.95],
+            'optimizer_eps': 1e-08,
+            'optimizer_grad_clip_norm': 10,
+            'optimizer_lr': 0.0001,
+            'optimizer_weight_decay': 1e-10,
+            'output_features': {},
+            'pad_language_to': 'longest',
+            'prefix_length': -1,
+            'pretrained_path': None,
+            'private': None,
+            'push_to_hub': True,
+            'repo_id': 'wmeddie/smolvla_place_rock',
+            'resize_imgs_with_padding': [512, 512],
+            'scheduler_decay_lr': 2.5e-06,
+            'scheduler_decay_steps': 30000,
+            'scheduler_warmup_steps': 1000,
+            'self_attn_every_n_layers': 2,
+            'tags': None,
+            'tokenizer_max_length': 48,
+            'train_expert_only': True,
+            'train_state_proj': True,
+            'type': 'smolvla',
+            'use_amp': False,
+            'use_cache': True,
+            'use_delta_joint_actions_aloha': False,
+            'vlm_model_name': 'HuggingFaceTB/SmolVLM2-500M-Video-Instruct'},
+ 'rename_map': {},
+ 'resume': False,
+ 'save_checkpoint': True,
+ 'save_freq': 20000,
+ 'scheduler': {'decay_lr': 2.5e-06,
+               'num_decay_steps': 30000,
+               'num_warmup_steps': 1000,
+               'peak_lr': 0.0001,
+               'type': 'cosine_decay_with_warmup'},
+ 'seed': 1000,
+ 'steps': 10000,
+ 'use_policy_training_preset': True,
+ 'wandb': {'disable_artifact': False,
+           'enable': True,
+           'entity': 'wm_eddie',
+           'mode': None,
+           'notes': None,
+           'project': 'zenbot',
+           'run_id': None}}
+/opt/venv/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+INFO 2025-12-06 12:14:38 db_utils.py:102 Logs will be synced with wandb.
+INFO 2025-12-06 12:14:38 db_utils.py:103 Track this run --> https://wandb.ai/wm_eddie/zenbot/runs/lqy83s1x
+INFO 2025-12-06 12:14:38 ot_train.py:183 Creating dataset
+INFO 2025-12-06 12:14:38 ot_train.py:202 Creating policy
+INFO 2025-12-06 12:14:54 ot_train.py:247 Creating optimizer and scheduler
+INFO 2025-12-06 12:14:54 hedulers.py:105 Auto-scaling LR scheduler: num_training_steps (10000) < num_decay_steps (30000). Scaling warmup: 1000 → 333, decay: 30000 → 10000 (scale factor: 0.333)
+INFO 2025-12-06 12:14:54 ot_train.py:259 Output dir: outputs/smolvla_place_rock
+INFO 2025-12-06 12:14:54 ot_train.py:262 cfg.steps=10000 (10K)
+INFO 2025-12-06 12:14:54 ot_train.py:263 dataset.num_frames=23924 (24K)
+INFO 2025-12-06 12:14:54 ot_train.py:264 dataset.num_episodes=15
+INFO 2025-12-06 12:14:54 ot_train.py:267 Effective batch size: 8 x 1 = 8
+INFO 2025-12-06 12:14:54 ot_train.py:268 num_learnable_params=99880992 (100M)
+INFO 2025-12-06 12:14:54 ot_train.py:269 num_total_params=450046176 (450M)
+INFO 2025-12-06 12:14:54 ot_train.py:324 Start offline training on a fixed dataset
+Reducing the number of VLM layers to 16 ...
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+INFO 2025-12-06 12:15:50 ot_train.py:351 step:200 smpl:2K ep:1 epch:0.07 loss:0.853 grdn:6.468 lr:3.0e-05 updt_s:0.267 data_s:0.013
+WARNING 2025-12-06 12:15:50 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:15:50 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:16:22 ot_train.py:351 step:400 smpl:3K ep:2 epch:0.13 loss:0.338 grdn:5.739 lr:8.7e-05 updt_s:0.151 data_s:0.008
+WARNING 2025-12-06 12:16:22 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:16:22 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:16:54 ot_train.py:351 step:600 smpl:5K ep:3 epch:0.20 loss:0.223 grdn:3.105 lr:9.9e-05 updt_s:0.148 data_s:0.010
+WARNING 2025-12-06 12:16:54 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:16:54 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:17:26 ot_train.py:351 step:800 smpl:6K ep:4 epch:0.27 loss:0.164 grdn:2.151 lr:9.9e-05 updt_s:0.147 data_s:0.010
+WARNING 2025-12-06 12:17:26 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:17:26 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:17:58 ot_train.py:351 step:1K smpl:8K ep:5 epch:0.33 loss:0.127 grdn:1.657 lr:9.8e-05 updt_s:0.148 data_s:0.011
+WARNING 2025-12-06 12:17:58 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:17:58 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:18:30 ot_train.py:351 step:1K smpl:10K ep:6 epch:0.40 loss:0.110 grdn:1.335 lr:9.7e-05 updt_s:0.148 data_s:0.010
+WARNING 2025-12-06 12:18:30 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:18:30 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:19:01 ot_train.py:351 step:1K smpl:11K ep:7 epch:0.47 loss:0.097 grdn:1.196 lr:9.6e-05 updt_s:0.149 data_s:0.008
+WARNING 2025-12-06 12:19:01 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:19:01 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:19:33 ot_train.py:351 step:2K smpl:13K ep:8 epch:0.54 loss:0.086 grdn:1.106 lr:9.5e-05 updt_s:0.151 data_s:0.005
+WARNING 2025-12-06 12:19:33 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:19:33 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:20:04 ot_train.py:351 step:2K smpl:14K ep:9 epch:0.60 loss:0.081 grdn:1.004 lr:9.3e-05 updt_s:0.151 data_s:0.004
+WARNING 2025-12-06 12:20:04 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:20:04 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:20:36 ot_train.py:351 step:2K smpl:16K ep:10 epch:0.67 loss:0.075 grdn:0.948 lr:9.2e-05 updt_s:0.152 data_s:0.005
+WARNING 2025-12-06 12:20:36 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:20:36 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:21:07 ot_train.py:351 step:2K smpl:18K ep:11 epch:0.74 loss:0.064 grdn:0.836 lr:9.0e-05 updt_s:0.151 data_s:0.004
+WARNING 2025-12-06 12:21:07 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:21:07 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:21:39 ot_train.py:351 step:2K smpl:19K ep:12 epch:0.80 loss:0.063 grdn:0.802 lr:8.8e-05 updt_s:0.152 data_s:0.006
+WARNING 2025-12-06 12:21:39 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:21:39 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:22:10 ot_train.py:351 step:3K smpl:21K ep:13 epch:0.87 loss:0.057 grdn:0.751 lr:8.6e-05 updt_s:0.151 data_s:0.004
+WARNING 2025-12-06 12:22:10 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:22:10 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:22:41 ot_train.py:351 step:3K smpl:22K ep:14 epch:0.94 loss:0.058 grdn:0.750 lr:8.3e-05 updt_s:0.150 data_s:0.004
+WARNING 2025-12-06 12:22:41 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:22:41 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+INFO 2025-12-06 12:23:16 ot_train.py:351 step:3K smpl:24K ep:15 epch:1.00 loss:0.055 grdn:0.741 lr:8.1e-05 updt_s:0.151 data_s:0.023
+WARNING 2025-12-06 12:23:16 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:23:16 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:23:48 ot_train.py:351 step:3K smpl:26K ep:16 epch:1.07 loss:0.050 grdn:0.670 lr:7.9e-05 updt_s:0.152 data_s:0.004
+WARNING 2025-12-06 12:23:48 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:23:48 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:24:19 ot_train.py:351 step:3K smpl:27K ep:17 epch:1.14 loss:0.045 grdn:0.633 lr:7.6e-05 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:24:19 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:24:19 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:24:50 ot_train.py:351 step:4K smpl:29K ep:18 epch:1.20 loss:0.049 grdn:0.657 lr:7.3e-05 updt_s:0.152 data_s:0.003
+WARNING 2025-12-06 12:24:50 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:24:50 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:25:21 ot_train.py:351 step:4K smpl:30K ep:19 epch:1.27 loss:0.045 grdn:0.629 lr:7.1e-05 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:25:21 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:25:21 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:25:52 ot_train.py:351 step:4K smpl:32K ep:20 epch:1.34 loss:0.039 grdn:0.572 lr:6.8e-05 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:25:52 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:25:52 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:26:24 ot_train.py:351 step:4K smpl:34K ep:21 epch:1.40 loss:0.038 grdn:0.548 lr:6.5e-05 updt_s:0.151 data_s:0.006
+WARNING 2025-12-06 12:26:24 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:26:24 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:26:55 ot_train.py:351 step:4K smpl:35K ep:22 epch:1.47 loss:0.042 grdn:0.584 lr:6.2e-05 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:26:55 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:26:55 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:27:26 ot_train.py:351 step:5K smpl:37K ep:23 epch:1.54 loss:0.034 grdn:0.515 lr:5.9e-05 updt_s:0.150 data_s:0.003
+WARNING 2025-12-06 12:27:26 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:27:26 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:27:57 ot_train.py:351 step:5K smpl:38K ep:24 epch:1.61 loss:0.037 grdn:0.548 lr:5.6e-05 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:27:57 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:27:57 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:28:28 ot_train.py:351 step:5K smpl:40K ep:25 epch:1.67 loss:0.032 grdn:0.471 lr:5.3e-05 updt_s:0.150 data_s:0.003
+WARNING 2025-12-06 12:28:28 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:28:28 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:28:59 ot_train.py:351 step:5K smpl:42K ep:26 epch:1.74 loss:0.031 grdn:0.470 lr:5.0e-05 updt_s:0.149 data_s:0.003
+WARNING 2025-12-06 12:28:59 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:28:59 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:29:31 ot_train.py:351 step:5K smpl:43K ep:27 epch:1.81 loss:0.032 grdn:0.485 lr:4.7e-05 updt_s:0.153 data_s:0.004
+WARNING 2025-12-06 12:29:31 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:29:31 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:30:02 ot_train.py:351 step:6K smpl:45K ep:28 epch:1.87 loss:0.030 grdn:0.461 lr:4.4e-05 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:30:02 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:30:02 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:30:33 ot_train.py:351 step:6K smpl:46K ep:29 epch:1.94 loss:0.027 grdn:0.422 lr:4.1e-05 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:30:33 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:30:33 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+INFO 2025-12-06 12:31:07 ot_train.py:351 step:6K smpl:48K ep:30 epch:2.01 loss:0.030 grdn:0.459 lr:3.8e-05 updt_s:0.149 data_s:0.021
+WARNING 2025-12-06 12:31:07 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:31:07 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:31:38 ot_train.py:351 step:6K smpl:50K ep:31 epch:2.07 loss:0.029 grdn:0.429 lr:3.5e-05 updt_s:0.152 data_s:0.004
+WARNING 2025-12-06 12:31:38 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:31:38 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:32:10 ot_train.py:351 step:6K smpl:51K ep:32 epch:2.14 loss:0.027 grdn:0.412 lr:3.2e-05 updt_s:0.152 data_s:0.004
+WARNING 2025-12-06 12:32:10 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:32:10 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:32:41 ot_train.py:351 step:7K smpl:53K ep:33 epch:2.21 loss:0.025 grdn:0.401 lr:2.9e-05 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:32:41 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:32:41 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:33:12 ot_train.py:351 step:7K smpl:54K ep:34 epch:2.27 loss:0.026 grdn:0.398 lr:2.6e-05 updt_s:0.153 data_s:0.004
+WARNING 2025-12-06 12:33:12 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:33:12 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:33:44 ot_train.py:351 step:7K smpl:56K ep:35 epch:2.34 loss:0.027 grdn:0.396 lr:2.4e-05 updt_s:0.152 data_s:0.003
+WARNING 2025-12-06 12:33:44 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:33:44 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:34:15 ot_train.py:351 step:7K smpl:58K ep:36 epch:2.41 loss:0.023 grdn:0.388 lr:2.1e-05 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:34:15 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:34:15 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:34:46 ot_train.py:351 step:7K smpl:59K ep:37 epch:2.47 loss:0.026 grdn:0.370 lr:1.9e-05 updt_s:0.152 data_s:0.003
+WARNING 2025-12-06 12:34:46 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:34:46 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:35:17 ot_train.py:351 step:8K smpl:61K ep:38 epch:2.54 loss:0.023 grdn:0.349 lr:1.7e-05 updt_s:0.150 data_s:0.003
+WARNING 2025-12-06 12:35:17 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:35:17 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:35:48 ot_train.py:351 step:8K smpl:62K ep:39 epch:2.61 loss:0.024 grdn:0.373 lr:1.5e-05 updt_s:0.152 data_s:0.003
+WARNING 2025-12-06 12:35:48 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:35:48 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:36:20 ot_train.py:351 step:8K smpl:64K ep:40 epch:2.68 loss:0.025 grdn:0.374 lr:1.3e-05 updt_s:0.153 data_s:0.003
+WARNING 2025-12-06 12:36:20 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:36:20 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:36:51 ot_train.py:351 step:8K smpl:66K ep:41 epch:2.74 loss:0.024 grdn:0.364 lr:1.1e-05 updt_s:0.152 data_s:0.004
+WARNING 2025-12-06 12:36:51 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:36:51 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:37:23 ot_train.py:351 step:8K smpl:67K ep:42 epch:2.81 loss:0.023 grdn:0.363 lr:9.3e-06 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:37:23 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:37:23 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:37:54 ot_train.py:351 step:9K smpl:69K ep:43 epch:2.88 loss:0.023 grdn:0.355 lr:7.8e-06 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:37:54 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:37:54 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:38:25 ot_train.py:351 step:9K smpl:70K ep:44 epch:2.94 loss:0.024 grdn:0.336 lr:6.5e-06 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:38:25 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:38:25 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/torchvision/io/_video_deprecation_warning.py:5: UserWarning: The video decoding and encoding capabilities of torchvision are deprecated from version 0.22 and will be removed in version 0.24. We recommend that you migrate to TorchCodec, where we'll consolidate the future decoding/encoding capabilities of PyTorch: https://github.com/pytorch/torchcodec
+  warnings.warn(
+INFO 2025-12-06 12:39:00 ot_train.py:351 step:9K smpl:72K ep:45 epch:3.01 loss:0.022 grdn:0.341 lr:5.4e-06 updt_s:0.151 data_s:0.023
+WARNING 2025-12-06 12:39:00 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:39:00 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:39:31 ot_train.py:351 step:9K smpl:74K ep:46 epch:3.08 loss:0.023 grdn:0.329 lr:4.4e-06 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:39:31 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:39:31 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:40:02 ot_train.py:351 step:9K smpl:75K ep:47 epch:3.14 loss:0.023 grdn:0.343 lr:3.7e-06 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:40:02 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:40:02 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:40:33 ot_train.py:351 step:10K smpl:77K ep:48 epch:3.21 loss:0.022 grdn:0.325 lr:3.1e-06 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:40:33 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:40:33 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:41:04 ot_train.py:351 step:10K smpl:78K ep:49 epch:3.28 loss:0.022 grdn:0.316 lr:2.7e-06 updt_s:0.151 data_s:0.003
+WARNING 2025-12-06 12:41:04 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:41:04 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:41:36 ot_train.py:351 step:10K smpl:80K ep:50 epch:3.34 loss:0.022 grdn:0.328 lr:2.5e-06 updt_s:0.151 data_s:0.005
+WARNING 2025-12-06 12:41:36 db_utils.py:141 WandB logging of key "losses_after_forward" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+WARNING 2025-12-06 12:41:36 db_utils.py:141 WandB logging of key "losses_after_rm_padding" was ignored as its type "<class 'torch.Tensor'>" is not handled by this wrapper.
+INFO 2025-12-06 12:41:36 ot_train.py:361 Checkpoint policy after step 10000
+INFO 2025-12-06 12:41:40 ot_train.py:430 End of training
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 407, in hf_raise_for_status
+    response.raise_for_status()
+  File "/opt/venv/lib/python3.12/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 403 Client Error: Forbidden for url: https://huggingface.co/api/repos/create
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/bin/lerobot-train", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/scripts/lerobot_train.py", line 444, in main
+    train()
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/configs/parser.py", line 233, in wrapper_inner
+    response = fn(cfg, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/scripts/lerobot_train.py", line 434, in train
+    unwrapped_policy.push_model_to_hub(cfg)
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/policies/pretrained.py", line 211, in push_model_to_hub
+    repo_id = api.create_repo(
+              ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3779, in create_repo
+    raise err
+  File "/opt/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3766, in create_repo
+    hf_raise_for_status(r)
+  File "/opt/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 471, in hf_raise_for_status
+    raise _format(HfHubHTTPError, message, response) from e
+huggingface_hub.errors.HfHubHTTPError: (Request ID: Root=1-69342485-1fb3f85b358f317167d70f27;c7fe3c9b-f443-4198-bf03-9b2d1f502740)
+
+403 Forbidden: You don't have the rights to create a model under the namespace "wmeddie".
+Cannot access content at: https://huggingface.co/api/repos/create.
+Make sure your token has the correct permissions.

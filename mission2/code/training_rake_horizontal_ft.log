@@ -1,0 +1,197 @@
+INFO 2025-12-06 23:35:29 ot_train.py:163 {'batch_size': 8,
+ 'checkpoint_path': None,
+ 'dataset': {'episodes': None,
+             'image_transforms': {'enable': False,
+                                  'max_num_transforms': 3,
+                                  'random_order': False,
+                                  'tfs': {'affine': {'kwargs': {'degrees': [-5.0,
+                                                                            5.0],
+                                                                'translate': [0.05,
+                                                                              0.05]},
+                                                     'type': 'RandomAffine',
+                                                     'weight': 1.0},
+                                          'brightness': {'kwargs': {'brightness': [0.8,
+                                                                                   1.2]},
+                                                         'type': 'ColorJitter',
+                                                         'weight': 1.0},
+                                          'contrast': {'kwargs': {'contrast': [0.8,
+                                                                               1.2]},
+                                                       'type': 'ColorJitter',
+                                                       'weight': 1.0},
+                                          'hue': {'kwargs': {'hue': [-0.05,
+                                                                     0.05]},
+                                                  'type': 'ColorJitter',
+                                                  'weight': 1.0},
+                                          'saturation': {'kwargs': {'saturation': [0.5,
+                                                                                   1.5]},
+                                                         'type': 'ColorJitter',
+                                                         'weight': 1.0},
+                                          'sharpness': {'kwargs': {'sharpness': [0.5,
+                                                                                 1.5]},
+                                                        'type': 'SharpnessJitter',
+                                                        'weight': 1.0}}},
+             'repo_id': 'wmeddie/zenbot_rake_horizontal',
+             'revision': None,
+             'root': None,
+             'streaming': False,
+             'use_imagenet_stats': True,
+             'video_backend': 'pyav'},
+ 'env': None,
+ 'eval': {'batch_size': 50, 'n_episodes': 50, 'use_async_envs': False},
+ 'eval_freq': 20000,
+ 'job_name': 'smolvla',
+ 'log_freq': 200,
+ 'num_workers': 4,
+ 'optimizer': {'betas': [0.9, 0.95],
+               'eps': 1e-08,
+               'grad_clip_norm': 10.0,
+               'lr': 0.0001,
+               'type': 'adamw',
+               'weight_decay': 1e-10},
+ 'output_dir': 'outputs/smolvla_rake_horizontal_ft',
+ 'policy': {'adapt_to_pi_aloha': False,
+            'add_image_special_tokens': False,
+            'attention_mode': 'cross_attn',
+            'chunk_size': 50,
+            'device': 'cuda',
+            'empty_cameras': 0,
+            'expert_width_multiplier': 0.75,
+            'freeze_vision_encoder': True,
+            'input_features': {'observation.images.front': {'shape': [3,
+                                                                      480,
+                                                                      640],
+                                                            'type': <FeatureType.VISUAL: 'VISUAL'>},
+                               'observation.images.top': {'shape': [3,
+                                                                    480,
+                                                                    640],
+                                                          'type': <FeatureType.VISUAL: 'VISUAL'>},
+                               'observation.state': {'shape': [6],
+                                                     'type': <FeatureType.STATE: 'STATE'>}},
+            'license': None,
+            'load_vlm_weights': False,
+            'max_action_dim': 32,
+            'max_period': 4.0,
+            'max_state_dim': 32,
+            'min_period': 0.004,
+            'n_action_steps': 50,
+            'n_obs_steps': 1,
+            'normalization_mapping': {'ACTION': <NormalizationMode.MEAN_STD: 'MEAN_STD'>,
+                                      'STATE': <NormalizationMode.MEAN_STD: 'MEAN_STD'>,
+                                      'VISUAL': <NormalizationMode.IDENTITY: 'IDENTITY'>},
+            'num_expert_layers': -1,
+            'num_steps': 10,
+            'num_vlm_layers': 16,
+            'optimizer_betas': [0.9, 0.95],
+            'optimizer_eps': 1e-08,
+            'optimizer_grad_clip_norm': 10.0,
+            'optimizer_lr': 0.0001,
+            'optimizer_weight_decay': 1e-10,
+            'output_features': {'action': {'shape': [6],
+                                           'type': <FeatureType.ACTION: 'ACTION'>}},
+            'pad_language_to': 'longest',
+            'prefix_length': -1,
+            'pretrained_path': 'wmeddie/smolvla_place_rock2',
+            'private': None,
+            'push_to_hub': True,
+            'repo_id': 'wmeddie/smolvla_place_rock2',
+            'resize_imgs_with_padding': [512, 512],
+            'scheduler_decay_lr': 2.5e-06,
+            'scheduler_decay_steps': 30000,
+            'scheduler_warmup_steps': 1000,
+            'self_attn_every_n_layers': 2,
+            'tags': None,
+            'tokenizer_max_length': 48,
+            'train_expert_only': True,
+            'train_state_proj': True,
+            'type': 'smolvla',
+            'use_amp': False,
+            'use_cache': True,
+            'use_delta_joint_actions_aloha': False,
+            'vlm_model_name': 'HuggingFaceTB/SmolVLM2-500M-Video-Instruct'},
+ 'rename_map': {},
+ 'resume': False,
+ 'save_checkpoint': True,
+ 'save_freq': 5000,
+ 'scheduler': {'decay_lr': 2.5e-06,
+               'num_decay_steps': 30000,
+               'num_warmup_steps': 1000,
+               'peak_lr': 0.0001,
+               'type': 'cosine_decay_with_warmup'},
+ 'seed': 1000,
+ 'steps': 20000,
+ 'use_policy_training_preset': True,
+ 'wandb': {'disable_artifact': False,
+           'enable': True,
+           'entity': 'wm_eddie',
+           'mode': None,
+           'notes': None,
+           'project': 'zenbot',
+           'run_id': None}}
+/opt/venv/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/opt/venv/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+INFO 2025-12-06 23:35:31 db_utils.py:102 Logs will be synced with wandb.
+INFO 2025-12-06 23:35:31 db_utils.py:103 Track this run --> https://wandb.ai/wm_eddie/zenbot/runs/3nejjeqf
+INFO 2025-12-06 23:35:31 ot_train.py:183 Creating dataset
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/datasets/lerobot_dataset.py", line 102, in __init__
+    self.load_metadata()
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/datasets/lerobot_dataset.py", line 160, in load_metadata
+    self.info = load_info(self.root)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/datasets/utils.py", line 284, in load_info
+    info = load_json(local_dir / INFO_PATH)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/datasets/utils.py", line 251, in load_json
+    with open(fpath) as f:
+         ^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/root/.cache/huggingface/lerobot/wmeddie/zenbot_rake_horizontal/meta/info.json'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 407, in hf_raise_for_status
+    response.raise_for_status()
+  File "/opt/venv/lib/python3.12/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 404 Client Error: Not Found for url: https://huggingface.co/api/datasets/wmeddie/zenbot_rake_horizontal/refs
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/bin/lerobot-train", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/scripts/lerobot_train.py", line 444, in main
+    train()
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/configs/parser.py", line 233, in wrapper_inner
+    response = fn(cfg, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/scripts/lerobot_train.py", line 184, in train
+    dataset = make_dataset(cfg)
+              ^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/datasets/factory.py", line 88, in make_dataset
+    ds_meta = LeRobotDatasetMetadata(
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/datasets/lerobot_dataset.py", line 105, in __init__
+    self.revision = get_safe_version(self.repo_id, self.revision)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/datasets/utils.py", line 515, in get_safe_version
+    hub_versions = get_repo_versions(repo_id)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/datasets/utils.py", line 484, in get_repo_versions
+    repo_refs = api.list_repo_refs(repo_id, repo_type="dataset")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3248, in list_repo_refs
+    hf_raise_for_status(response)
+  File "/opt/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 457, in hf_raise_for_status
+    raise _format(RepositoryNotFoundError, message, response) from e
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6934bdc3-15351a6148eb07c029a8a2a1;28796449-1f32-4444-8023-e9a326565a69)
+
+Repository Not Found for url: https://huggingface.co/api/datasets/wmeddie/zenbot_rake_horizontal/refs.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated. For more details, see https://huggingface.co/docs/huggingface_hub/authentication

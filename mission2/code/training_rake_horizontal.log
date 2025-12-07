@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/opt/venv/bin/lerobot-train", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/scripts/lerobot_train.py", line 444, in main
+    train()
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/configs/parser.py", line 233, in wrapper_inner
+    response = fn(cfg, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/scripts/lerobot_train.py", line 143, in train
+    cfg.validate()
+  File "/opt/venv/lib/python3.12/site-packages/lerobot/configs/train.py", line 110, in validate
+    raise FileExistsError(
+FileExistsError: Output directory outputs/smolvla_rake_horizontal already exists and resume is False. Please change your output directory so that outputs/smolvla_rake_horizontal is not overwritten.
