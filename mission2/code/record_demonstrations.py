@@ -54,16 +54,16 @@ TELEOP_ID = "my_awesome_leader_arm"
 # - CAMERA_OVERHEAD (4): Overhead view for planner (top camera)
 # - CAMERA_ARM (6): Robot arm camera for observations (front camera)
 
-# Skill name mapping for dataset tasks
+# Skill name mapping for dataset tasks (no spaces - causes issues with lerobot-record)
 SKILL_TASK_NAMES = {
-    "flatten": "Flatten Sand",
-    "rake": "Rake Sand",
-    "rake_horizontal": "Rake Horizontal Lines",
-    "rake_vertical": "Rake Vertical Lines",
-    "zigzag": "Draw Zigzag",
-    "circle": "Draw Circles",
-    "stamp": "Stamp Triangle",
-    "place_rock": "Place Rock",
+    "flatten": "flatten_sand",
+    "rake": "rake_sand",
+    "rake_horizontal": "rake_horizontal",
+    "rake_vertical": "rake_vertical",
+    "zigzag": "draw_zigzag",
+    "circle": "draw_circles",
+    "stamp": "stamp_triangle",
+    "place_rock": "place_rock",
 }
 
 
