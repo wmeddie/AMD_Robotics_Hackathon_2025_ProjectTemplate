@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenBot: The Zen Garden Maker</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+      color: #333;
+    }
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    #ui-panel {
+      width: 280px;
+      padding: 16px;
+      background: #ffffff;
+      box-shadow: 2px 0 6px rgba(0,0,0,0.1);
+    }
+    #ui-panel h2 {
+      font-size: 16px;
+      margin: 16px 0 8px;
+    }
+    #ui-panel button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      font-size: 14px;
+      cursor: pointer;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+    }
+    #ui-panel button:hover {
+      background: #2563eb;
+    }
+    #ui-panel button.primary {
+      background: #3b82f6;
+    }
+    #ui-panel button.primary:hover {
+      background: #2563eb;
+    }
+    #ui-panel button:disabled,
+    #ui-panel button.deactivated {
+      background: #cbd5e1;
+      color: #475569;
+      cursor: not-allowed;
+    }
+    #stepList {
+      margin-top: 16px;
+      padding: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      min-height: 120px;
+      font-size: 14px;
+    }
+    .preview-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 12px;
+      align-items: center;
+    }
+    .preview-area h1 {
+      margin: 0;
+      font-size: 22px;
+      color: #111827;
+      text-align: center;
+    }
+    .preview-area h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #1f2937;
+      text-align: center;
+    }
+    .logo-wrapper {
+      margin-top: 6px;
+      margin-bottom: 32px;
+    }
+    .logo-wrapper img {
+      max-width: 260px;
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    .preview-label {
+      margin-top: 0;
+    }
+    .spacingA {
+      margin-top: 20px !important;
+    }
+    .spacingB {
+      margin-top: 28px !important;
+    }
+    #canvas-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div id="ui-panel">
+      <h2>Add Step</h2>
+      <button id="btnHorizontal">Draw Lines</button>
+      <button id="btnCircle">Draw Large Circle</button>
+      <button id="btnCluster">Draw Small Circles</button>
+      <button id="btnRock">Place Rock</button>
+      <h2 class="spacingB">Steps</h2>
+      <div id="stepList">No steps yet.</div>
+      <button id="btnClear">Clear</button>
+      <h2 class="spacingB">Run</h2>
+      <button id="btnRun" class="primary">Start ZenBot</button>
+      <button id="btnAutoRun">Auto-Run ZenBot from Camera</button>
+    </div>
+    <div class="preview-area">
+      <h1>ZenBot: The Zen Garden Maker</h1>
+      <div class="logo-wrapper">
+        <img src="/karesansui-image" alt="Karesansui logo" onerror="this.style.display='none'">
+      </div>
+      <h2 class="preview-label">Preview</h2>
+      <div id="canvas-container"></div>
+    </div>
+  </div>
+
+  <script src="/static/sketch.js"></script>
+  <script>
+    let plan = { steps: [] };
+    let isExecuting = false;
+    const btnHorizontal = document.getElementById('btnHorizontal');
+    const btnCircle = document.getElementById('btnCircle');
+    const btnCluster = document.getElementById('btnCluster');
+    const btnRock = document.getElementById('btnRock');
+    const btnClear = document.getElementById('btnClear');
+    const btnRun = document.getElementById('btnRun');
+    const btnAutoRun = document.getElementById('btnAutoRun');
+
+    const actionHandlers = {
+      draw_lines: async () => waitForMockAction('draw_lines'),
+      draw_large_circle: async () => waitForMockAction('draw_large_circle'),
+      draw_small_circles: async () => waitForMockAction('draw_small_circles'),
+      place_rock: async () => waitForMockAction('place_rock')
+    };
+
+    const permanentlyDisabledButtons = new Set([btnCircle, btnCluster]);
+
+    function deactivateActionButton(button) {
+      if (!button) return;
+      button.disabled = true;
+      button.classList.add('deactivated');
+    }
+
+    function reactivateActionButtons() {
+      [btnHorizontal, btnRock].forEach((btn) => {
+        if (!btn) return;
+        btn.disabled = false;
+        btn.classList.remove('deactivated');
+      });
+      permanentlyDisabledButtons.forEach((btn) => {
+        if (!btn) return;
+        deactivateActionButton(btn);
+      });
+    }
+
+    function syncActionButtons() {
+      const types = new Set(plan.steps.map(step => step.type));
+      if (types.has('horizontal')) deactivateActionButton(btnHorizontal);
+      if (types.has('rock')) deactivateActionButton(btnRock);
+      permanentlyDisabledButtons.forEach((btn) => deactivateActionButton(btn));
+    }
+
+    function deactivateDuringExecution() {
+      [btnHorizontal, btnCircle, btnCluster, btnRock, btnClear, btnRun, btnAutoRun].forEach((btn) => {
+        if (!btn) return;
+        btn.disabled = true;
+        btn.classList.add('deactivated');
+        btn.classList.remove('primary');
+      });
+    }
+
+    function reactivateAfterExecution() {
+      reactivateActionButtons();
+      syncActionButtons();
+      updateRunButtonState();
+      if (btnClear) {
+        btnClear.disabled = false;
+        btnClear.classList.remove('deactivated');
+      }
+      if (btnAutoRun) {
+        btnAutoRun.disabled = false;
+        btnAutoRun.classList.remove('deactivated');
+      }
+    }
+
+    function updateRunButtonState() {
+      const hasSteps = plan.steps.length > 0;
+      btnRun.disabled = !hasSteps;
+      if (hasSteps) {
+        btnRun.classList.add('primary');
+        btnRun.classList.remove('deactivated');
+      } else {
+        btnRun.classList.remove('primary');
+        btnRun.classList.add('deactivated');
+      }
+      if (isExecuting) {
+        btnRun.disabled = true;
+        btnRun.classList.add('deactivated');
+        btnRun.classList.remove('primary');
+      }
+    }
+
+    function updateStepList() {
+      const listDiv = document.getElementById('stepList');
+      updateRunButtonState();
+      if (!plan.steps.length) {
+        listDiv.textContent = 'No steps yet.';
+        return;
+      }
+      listDiv.innerHTML = plan.steps.map((step, idx) => {
+        if (step.type === 'horizontal') {
+          return `${idx + 1}. Draw Lines`;
+        } else if (step.type === 'circle') {
+          return `${idx + 1}. Draw Large Circle`;
+        } else if (step.type === 'cluster') {
+          return `${idx + 1}. Draw Small Circles`;
+        } else if (step.type === 'rock') {
+          return `${idx + 1}. Place Rock`;
+        }
+        return `${idx + 1}. Unknown step`;
+      }).join('<br>');
+
+      syncActionButtons();
+    }
+
+    // Initialize Run button state on load.
+    updateRunButtonState();
+    hideNonDemoActions();
+
+    function hideNonDemoActions() {
+      permanentlyDisabledButtons.forEach((btn) => {
+        if (!btn) return;
+        btn.disabled = true;
+        btn.classList.add('deactivated');
+        btn.setAttribute('aria-hidden', 'true');
+        btn.style.display = 'none';
+      });
+    }
+
+    async function loadPlan() {
+      try {
+        const res = await fetch('/api/plan');
+        plan = await res.json();
+        updateStepList();
+        if (typeof redrawZen === 'function') {
+          redrawZen(plan);
+        }
+      } catch (err) {
+        console.error('Failed to load plan', err);
+      }
+    }
+
+    btnHorizontal.addEventListener('click', (event) => {
+      plan.steps.push({ type: 'horizontal', numLines: 36 });
+      updateStepList();
+      redrawZen(plan);
+      deactivateActionButton(event.currentTarget);
+    });
+
+    btnCircle.addEventListener('click', (event) => {
+      plan.steps.push({ type: 'circle', r: 100 });
+      updateStepList();
+      redrawZen(plan);
+      deactivateActionButton(event.currentTarget);
+    });
+
+    btnCluster.addEventListener('click', (event) => {
+      plan.steps.push({ type: 'cluster', r: 65 });
+      updateStepList();
+      redrawZen(plan);
+      deactivateActionButton(event.currentTarget);
+    });
+
+    btnRock.addEventListener('click', (event) => {
+      plan.steps.push({ type: 'rock' });
+      updateStepList();
+      redrawZen(plan);
+      deactivateActionButton(event.currentTarget);
+    });
+
+    btnClear.addEventListener('click', () => {
+      plan = { steps: [] };
+      updateStepList();
+      redrawZen(plan);
+      reactivateActionButtons();
+    });
+
+    function buildActionSequence() {
+      return plan.steps.map((step) => {
+        if (step.type === 'horizontal') return 'draw_lines';
+        if (step.type === 'circle') return 'draw_large_circle';
+        if (step.type === 'cluster') return 'draw_small_circles';
+        if (step.type === 'rock') return 'place_rock';
+        return null;
+      }).filter(Boolean);
+    }
+
+    function optimizePlanSteps(steps) {
+      const nextSteps = [...steps];
+
+      const linesIndex = nextSteps.findIndex((step) => step.type === 'horizontal');
+      if (linesIndex > 0) {
+        const [linesStep] = nextSteps.splice(linesIndex, 1);
+        nextSteps.unshift(linesStep);
+      }
+
+      const rockIndex = nextSteps.findIndex((step) => step.type === 'rock');
+      if (rockIndex !== -1 && rockIndex !== nextSteps.length - 1) {
+        const [rockStep] = nextSteps.splice(rockIndex, 1);
+        nextSteps.push(rockStep);
+      }
+
+      return nextSteps;
+    }
+
+    async function waitForMockAction(actionName) {
+      console.log(`Executing action: ${actionName}`);
+      return new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    async function executePlanActions() {
+      if (isExecuting || !plan.steps.length) return;
+      isExecuting = true;
+      deactivateDuringExecution();
+
+      try {
+        const sequence = buildActionSequence();
+        for (const actionName of sequence) {
+          const handler = actionHandlers[actionName];
+          if (handler) {
+            await handler();
+          }
+        }
+      } catch (err) {
+        console.error('Failed to execute plan actions', err);
+        window.alert('An error interrupted ZenBot. Please try again.');
+      } finally {
+        isExecuting = false;
+        reactivateAfterExecution();
+      }
+    }
+
+    function confirmSurfaceReady() {
+      return window.confirm(
+        'Please level the sand tray before starting. Press OK once the surface is ready.'
+      );
+    }
+
+    btnRun.addEventListener('click', () => {
+      if (!plan.steps.length) return;
+
+      const originalStepsJson = JSON.stringify(plan.steps);
+      const optimizedSteps = optimizePlanSteps(plan.steps);
+      const wasChanged = originalStepsJson !== JSON.stringify(optimizedSteps);
+
+      plan.steps = optimizedSteps;
+      updateStepList();
+      if (typeof redrawZen === 'function') {
+        redrawZen(plan);
+      }
+
+      if (wasChanged) {
+        window.alert('The execution steps were optimized. Press OK to continue.');
+      }
+
+      if (!confirmSurfaceReady()) return;
+
+      executePlanActions();
+    });
+
+    btnAutoRun.addEventListener('click', async () => {
+      if (isExecuting) return;
+
+      if (!confirmSurfaceReady()) return;
+
+      isExecuting = true;
+      deactivateDuringExecution();
+
+      try {
+        await waitForMockAction('auto_run_from_camera');
+      } catch (err) {
+        console.error('Failed to auto-run from camera', err);
+        window.alert('Auto-run from camera was interrupted. Please try again.');
+      } finally {
+        isExecuting = false;
+        reactivateAfterExecution();
+      }
+    });
+
+    window.addEventListener('load', loadPlan);
+  </script>
+</body>
+</html>
